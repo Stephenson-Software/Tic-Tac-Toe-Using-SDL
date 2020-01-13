@@ -51,6 +51,11 @@ SDL_Texture* bottomLeftT = NULL;
 SDL_Texture* bottomMiddleT = NULL;
 SDL_Texture* bottomRightT = NULL;
 
+// end screens
+SDL_Texture* playerWin = NULL;
+SDL_Texture* computerWin = NULL;
+SDL_Texture* tie = NULL;
+
 // -------------------------------------------------
 
 bool init() {
@@ -92,6 +97,10 @@ bool loadMedia() {
 	bottomMiddleT = texture;
 	bottomRightT = texture;
 	
+	playerWin = loadTexture("playerWin.png");
+	computerWin = loadTexture("computerWin.png");
+	tie = loadTexture("tie.png");
+	
 	return true;
 }
 
@@ -131,81 +140,202 @@ string checkForWinner() {
 	
 	// case top row
 	if (topLeftT == xTexture && topMiddleT == xTexture && topRightT == xTexture) {
-		return "player";
+		winner = "player";
 	}
 	
 	if (topLeftT == oTexture && topMiddleT == oTexture && topRightT == oTexture) {
-		return "computer";
+		winner = "computer";
 	}
 	
 	// case middle row
 	if (middleLeftT == xTexture && middleMiddleT == xTexture && middleRightT == xTexture) {
-		return "player";
+		winner = "player";
 	}
 	
 	if (middleLeftT == oTexture && middleMiddleT == oTexture && middleRightT == oTexture) {
-		return "computer";
+		winner = "computer";
 	}
 	
 	// case bottom row
 	if (bottomLeftT == xTexture && bottomMiddleT == xTexture && bottomRightT == xTexture) {
-		return "player";
+		winner = "player";
 	}
 	
 	if (bottomLeftT == oTexture && bottomMiddleT == oTexture && bottomRightT == oTexture) {
-		return "computer";
+		winner = "computer";
 	}
 	
 	// case left column
 	if (topLeftT == xTexture && middleLeftT == xTexture && bottomLeftT == xTexture) {
-		return "player";
+		winner = "player";
 	}
 	
 	if (topLeftT == oTexture && middleLeftT == oTexture && bottomLeftT == oTexture) {
-		return "computer";
+		winner = "computer";
 	}
 	
 	// case middle column
 	if (topMiddleT == xTexture && middleMiddleT == xTexture && bottomMiddleT == xTexture) {
-		return "player";
+		winner = "player";
 	}
 	
 	if (topMiddleT == oTexture && middleMiddleT == oTexture && bottomMiddleT == oTexture) {
-		return "computer";
+		winner = "computer";
 	}
 	
 	// case right column
 	if (topRightT == xTexture && middleRightT == xTexture && bottomRightT == xTexture) {
-		return "player";
+		winner = "player";
 	}
 	
 	if (topRightT == oTexture && middleRightT == oTexture && bottomRightT == oTexture) {
-		return "computer";
+		winner = "computer";
 	}
 	
 	// case right diagonal
 	if (bottomLeftT == xTexture && middleMiddleT == xTexture && topRightT == xTexture) {
-		return "player";
+		winner = "player";
 	}
 	
 	if (bottomLeftT == oTexture && middleMiddleT == oTexture && topRightT == oTexture) {
-		return "computer";
+		winner = "computer";
 	}
 	
 	// case left diagonal
 	if (topLeftT == xTexture && middleMiddleT == xTexture && bottomRightT == xTexture) {
-		return "player";
+		winner = "player";
 	}
 	
 	if (topLeftT == oTexture && middleMiddleT == oTexture && bottomRightT == oTexture) {
-		return "computer";
+		winner = "computer";
 	}
 	
 	// case tie
 	if (moves == 9) {
-		return "tie"; // hope this works
+		winner = "tie"; // hope this works
 	}
 	
+	return winner;
+}
+
+void winScreen() {
+	// main loop flag
+	bool running = true;
+	
+	// event handler
+	SDL_Event e;
+	
+	// while app is running
+	while (running) {
+		
+		// handle events on queue
+		while (SDL_PollEvent(&e) != 0) {
+			
+			// user requests quit
+			if (e.type == SDL_QUIT) {
+				close();
+			}
+			
+		}
+		
+		// clear screen
+		SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+		SDL_RenderClear(renderer);
+
+		// full screen viewpoint
+		SDL_Rect bottomRight;
+		bottomRight.x = 0;
+		bottomRight.y = 0;
+		bottomRight.w = SCREEN_WIDTH;
+		bottomRight.h = SCREEN_HEIGHT;
+		SDL_RenderSetViewport(renderer, &bottomRight);
+
+		// render texture to screen
+		SDL_RenderCopy(renderer, playerWin, NULL, NULL);
+		
+		// update screen
+		SDL_RenderPresent(renderer);
+	}
+}
+
+void loseScreen() {
+	// main loop flag
+	bool running = true;
+	
+	// event handler
+	SDL_Event e;
+	
+	// while app is running
+	while (running) {
+		
+		// handle events on queue
+		while (SDL_PollEvent(&e) != 0) {
+			
+			// user requests quit
+			if (e.type == SDL_QUIT) {
+				close();
+			}
+			
+		}
+		
+		// clear screen
+		SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+		SDL_RenderClear(renderer);
+
+		// full screen viewpoint
+		SDL_Rect bottomRight;
+		bottomRight.x = 0;
+		bottomRight.y = 0;
+		bottomRight.w = SCREEN_WIDTH;
+		bottomRight.h = SCREEN_HEIGHT;
+		SDL_RenderSetViewport(renderer, &bottomRight);
+		
+		// render texture to screen
+		SDL_RenderCopy(renderer, computerWin, NULL, NULL);
+		
+		// update screen
+		SDL_RenderPresent(renderer);
+	}
+}
+
+void tieScreen() {
+	// main loop flag
+	bool running = true;
+	
+	// event handler
+	SDL_Event e;
+	
+	// while app is running
+	while (running) {
+		
+		// handle events on queue
+		while (SDL_PollEvent(&e) != 0) {
+			
+			// user requests quit
+			if (e.type == SDL_QUIT) {
+				close();
+			}
+			
+		}
+		
+		// clear screen
+		SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+		SDL_RenderClear(renderer);
+
+		// full screen viewpoint
+		SDL_Rect bottomRight;
+		bottomRight.x = 0;
+		bottomRight.y = 0;
+		bottomRight.w = SCREEN_WIDTH;
+		bottomRight.h = SCREEN_HEIGHT;
+		SDL_RenderSetViewport(renderer, &bottomRight);
+
+		// render texture to screen
+		SDL_RenderCopy(renderer, tie, NULL, NULL);
+		
+		// update screen
+		SDL_RenderPresent(renderer);
+	}
 }
 
 void renderBoxes() {
@@ -314,30 +444,37 @@ void renderBoxes() {
 	
 	// update screen
 	SDL_RenderPresent(renderer);
-	/*
+
 	string result = checkForWinner();
 
-	if (result == "none") {
-		cout << "Still playing\n";
-	}
 	if (result == "player") {
-		cout << "Player Wins\n";
+		//Wait 1 seconds
+		SDL_Delay(1000);
+		
+		winScreen();
 	}
 	if (result == "computer") {
-		cout << "Computer Wins\n";
+		//Wait 1 seconds
+		SDL_Delay(1000);
+		
+		loseScreen();
 	}
 	if (result == "tie") {
-		cout << "Tie\n";
+		//Wait 1 seconds
+		SDL_Delay(1000);
+		
+		tieScreen();
 	}
-	*/
+
 }
 
 void computerTurn() {
 	if (moves < 9) {
-		//Wait .1 seconds
-		SDL_Delay(100);
 		
 		renderBoxes();
+		
+		//Wait 1 seconds
+		SDL_Delay(1000);
 		
 		bool turn = true;
 		
@@ -407,7 +544,7 @@ void computerTurn() {
 	}
 }
 
-int main(int argc, char* args[]) {
+int main(int argc, char* args[]) {	
 	// start up SDL and create window
 	init();
 	
