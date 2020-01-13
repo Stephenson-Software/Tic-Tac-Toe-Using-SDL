@@ -66,7 +66,7 @@ bool init() {
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
 	
 	// create window
-	window = SDL_CreateWindow("Viewport", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+	window = SDL_CreateWindow("Tic Tac Toe", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 	
 	// create renderer for window
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
