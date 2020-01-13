@@ -105,8 +105,22 @@ bool loadMedia() {
 }
 
 void close() {
-	// free loaded image
+	// free loaded images
 	SDL_DestroyTexture(texture);
+	SDL_DestroyTexture(oTexture);
+	SDL_DestroyTexture(xTexture);
+	SDL_DestroyTexture(topLeftT);
+	SDL_DestroyTexture(topMiddleT);
+	SDL_DestroyTexture(topRightT);
+	SDL_DestroyTexture(middleLeftT);
+	SDL_DestroyTexture(middleMiddleT);
+	SDL_DestroyTexture(middleRightT);
+	SDL_DestroyTexture(bottomLeftT);
+	SDL_DestroyTexture(bottomMiddleT);
+	SDL_DestroyTexture(bottomRightT);
+	SDL_DestroyTexture(playerWin);
+	SDL_DestroyTexture(computerWin);
+	SDL_DestroyTexture(tie);
 	
 	// destroy window
 	SDL_DestroyRenderer(renderer);
