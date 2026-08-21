@@ -1,0 +1,8 @@
+# compiled output from building tictactoe.cpp
+tictactoe
+a.out
+*.o
+*.obj
+
+# the tracked tictactoe.exe is deliberately not ignored here; ignore rules do
+# not apply to already-tracked files, and whether it stays tracked is open
