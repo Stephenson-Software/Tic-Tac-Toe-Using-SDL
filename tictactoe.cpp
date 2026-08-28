@@ -224,9 +224,9 @@ string checkForWinner() {
 		winner = "computer";
 	}
 	
-	// case tie
-	if (moves == 9) {
-		winner = "tie"; // hope this works
+	// case tie, only when a full board completed no line
+	if (moves == 9 && winner == "none") {
+		winner = "tie";
 	}
 	
 	return winner;
