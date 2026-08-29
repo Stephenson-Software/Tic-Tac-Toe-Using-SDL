@@ -15,6 +15,9 @@ const int SCREEN_HEIGHT = 600;
 // tracker
 int moves;
 
+// set when the user closes the window, from any loop
+bool quitRequested = false;
+
 // starts up SDL and creates window
 bool init();
 
@@ -105,22 +108,31 @@ bool loadMedia() {
 }
 
 void close() {
+	// the box pointers only ever alias the three loaded box textures, so they
+	// are cleared rather than destroyed
+	topLeftT = NULL;
+	topMiddleT = NULL;
+	topRightT = NULL;
+	middleLeftT = NULL;
+	middleMiddleT = NULL;
+	middleRightT = NULL;
+	bottomLeftT = NULL;
+	bottomMiddleT = NULL;
+	bottomRightT = NULL;
+	
 	// free loaded images
 	SDL_DestroyTexture(texture);
 	SDL_DestroyTexture(oTexture);
 	SDL_DestroyTexture(xTexture);
-	SDL_DestroyTexture(topLeftT);
-	SDL_DestroyTexture(topMiddleT);
-	SDL_DestroyTexture(topRightT);
-	SDL_DestroyTexture(middleLeftT);
-	SDL_DestroyTexture(middleMiddleT);
-	SDL_DestroyTexture(middleRightT);
-	SDL_DestroyTexture(bottomLeftT);
-	SDL_DestroyTexture(bottomMiddleT);
-	SDL_DestroyTexture(bottomRightT);
 	SDL_DestroyTexture(playerWin);
 	SDL_DestroyTexture(computerWin);
 	SDL_DestroyTexture(tie);
+	texture = NULL;
+	oTexture = NULL;
+	xTexture = NULL;
+	playerWin = NULL;
+	computerWin = NULL;
+	tie = NULL;
 	
 	// destroy window
 	SDL_DestroyRenderer(renderer);
@@ -245,9 +257,10 @@ void winScreen() {
 		// handle events on queue
 		while (SDL_PollEvent(&e) != 0) {
 			
-			// user requests quit
+			// user requests quit, teardown is left to main
 			if (e.type == SDL_QUIT) {
-				close();
+				quitRequested = true;
+				running = false;
 			}
 			
 		}
@@ -285,9 +298,10 @@ void loseScreen() {
 		// handle events on queue
 		while (SDL_PollEvent(&e) != 0) {
 			
-			// user requests quit
+			// user requests quit, teardown is left to main
 			if (e.type == SDL_QUIT) {
-				close();
+				quitRequested = true;
+				running = false;
 			}
 			
 		}
@@ -325,9 +339,10 @@ void tieScreen() {
 		// handle events on queue
 		while (SDL_PollEvent(&e) != 0) {
 			
-			// user requests quit
+			// user requests quit, teardown is left to main
 			if (e.type == SDL_QUIT) {
-				close();
+				quitRequested = true;
+				running = false;
 			}
 			
 		}
@@ -486,6 +501,11 @@ void computerTurn() {
 	if (moves < 9) {
 		
 		renderBoxes();
+		
+		// the player may have won and then quit from the end screen
+		if (quitRequested) {
+			return;
+		}
 		
 		//Wait 1 seconds
 		SDL_Delay(1000);
@@ -654,7 +674,14 @@ int main(int argc, char* args[]) {
 			}
 		}
 		
-		renderBoxes();
+		// an end screen may have absorbed the quit event
+		if (quitRequested) {
+			running = false;
+		}
+		
+		if (running) {
+			renderBoxes();
+		}
 	}
 	
 	// free resources and close SDL
