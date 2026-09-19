@@ -513,8 +513,6 @@ void computerTurn() {
 		bool turn = true;
 		
 		while (turn) {
-			srand(time(NULL));
-				
 			int num = rand() % 9 + 1;
 			
 			switch(num) {
@@ -578,7 +576,10 @@ void computerTurn() {
 	}
 }
 
-int main(int argc, char* args[]) {	
+int main(int argc, char* args[]) {
+	// seed the computer's move selection once, not on every retry
+	srand(time(NULL));
+
 	// start up SDL and create window
 	init();
 	
