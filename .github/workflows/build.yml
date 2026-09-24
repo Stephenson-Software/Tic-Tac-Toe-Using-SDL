@@ -1,0 +1,26 @@
+# The game has no test suite; this proves it still builds with the command
+# README.txt.txt documents.
+name: Build
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    # Nothing here runs the game, but if a step ever does, it must not count
+    # as a use of it (see "Usage reporting" in README.txt.txt).
+    env:
+      TRACE_USAGE_REPORTING: "off"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install SDL2 dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libsdl2-dev libsdl2-image-dev
+      - name: Build (as documented)
+        run: g++ -std=c++17 -Wall -pthread tictactoe.cpp -o tictactoe $(pkg-config --cflags --libs sdl2 SDL2_image)
+      - name: Check the executable exists
+        run: test -x tictactoe
