@@ -17,11 +17,14 @@ tictactoe.cpp includes <SDL.h> and <SDL_image.h> rather than <SDL2/SDL.h>, so
 the SDL2 include directory has to be on the include path. On Linux and macOS,
 pkg-config supplies both that path and the libraries:
 
-    g++ -std=c++17 tictactoe.cpp -o tictactoe $(pkg-config --cflags --libs sdl2 SDL2_image)
+    g++ -std=c++17 -pthread tictactoe.cpp -o tictactoe $(pkg-config --cflags --libs sdl2 SDL2_image)
 
 Without pkg-config, the same thing spelled out:
 
-    g++ -std=c++17 -I/usr/include/SDL2 tictactoe.cpp -o tictactoe -lSDL2 -lSDL2_image
+    g++ -std=c++17 -pthread -I/usr/include/SDL2 tictactoe.cpp -o tictactoe -lSDL2 -lSDL2_image
+
+-pthread is there because the game reports usage on a background thread (see
+"Usage reporting" below).
 
 Running:
 
@@ -35,6 +38,33 @@ next to it. That binary is prebuilt and is not rebuilt when tictactoe.cpp
 changes, so it may not match the current source.
 
 The window is 600x600.
+
+Usage reporting:
+
+The game reports to trace (https://trace.danielstephenson.dev) by default: one
+startup event per launch, carrying the program name (Tic-Tac-Toe-Using-SDL) and
+its version from version.txt. Nothing about you, your machine, your IP address
+or the game is sent.
+
+The first run prints one line saying so on stderr and writes a small settings
+file, usage-reporting.conf, to $XDG_CONFIG_HOME/Tic-Tac-Toe-Using-SDL/ (by
+default ~/.config/Tic-Tac-Toe-Using-SDL/; ~/Library/Application Support/
+Tic-Tac-Toe-Using-SDL/ on macOS, %APPDATA%\Tic-Tac-Toe-Using-SDL\ on Windows).
+To turn reporting off:
+
+  - set enabled=false in that file, or
+  - set TRACE_USAGE_REPORTING=off or DO_NOT_TRACK=1 in the environment (this
+    turns it off for every trace-reporting program, and nothing is printed or
+    written).
+
+The event is sent in the background by the vendored trace-client-cpp header
+(trace_client.hpp, https://github.com/Stephenson-Software/trace-client-cpp)
+through the system curl; if curl is missing or the machine is offline, nothing
+is sent and the game is unaffected. The prebuilt tictactoe.exe predates this
+and does not report until it is rebuilt.
+TIC_TAC_TOE_USING_SDL_USAGE_REPORTING_ENDPOINT points reporting at another
+server, e.g. a local one while testing.
+Details: https://github.com/Stephenson-Software/trace#usage-reporting
 
 Note:
 I used the SDL tutorial located at the page below as a jumping off point for this.

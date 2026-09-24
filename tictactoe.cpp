@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <time.h>
+#include "usageReporting.h"
 
 // using declaration
 using namespace std;
@@ -57,7 +58,9 @@ SDL_Texture* bottomRightT = NULL;
 // end screens
 SDL_Texture* playerWin = NULL;
 SDL_Texture* computerWin = NULL;
-SDL_Texture* tie = NULL;
+// (not "tie": with `using namespace std`, that name collides with std::tie
+// once <tuple> is included, as the usage-reporting header does)
+SDL_Texture* tieTexture = NULL;
 
 // -------------------------------------------------
 
@@ -102,7 +105,7 @@ bool loadMedia() {
 	
 	playerWin = loadTexture("playerWin.png");
 	computerWin = loadTexture("computerWin.png");
-	tie = loadTexture("tie.png");
+	tieTexture = loadTexture("tie.png");
 	
 	return true;
 }
@@ -126,13 +129,13 @@ void close() {
 	SDL_DestroyTexture(xTexture);
 	SDL_DestroyTexture(playerWin);
 	SDL_DestroyTexture(computerWin);
-	SDL_DestroyTexture(tie);
+	SDL_DestroyTexture(tieTexture);
 	texture = NULL;
 	oTexture = NULL;
 	xTexture = NULL;
 	playerWin = NULL;
 	computerWin = NULL;
-	tie = NULL;
+	tieTexture = NULL;
 	
 	// destroy window
 	SDL_DestroyRenderer(renderer);
@@ -360,7 +363,7 @@ void tieScreen() {
 		SDL_RenderSetViewport(renderer, &bottomRight);
 
 		// render texture to screen
-		SDL_RenderCopy(renderer, tie, NULL, NULL);
+		SDL_RenderCopy(renderer, tieTexture, NULL, NULL);
 		
 		// update screen
 		SDL_RenderPresent(renderer);
@@ -577,6 +580,11 @@ void computerTurn() {
 }
 
 int main(int argc, char* args[]) {
+	// One startup event to trace, sent in the background; see usageReporting.h
+	// and "Usage reporting" in README.txt.txt.
+	usage_reporting::UsageReporter usageReporting;
+	usageReporting.reportStartup();
+
 	// seed the computer's move selection once, not on every retry
 	srand(time(NULL));
 
