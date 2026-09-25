@@ -33,6 +33,10 @@ from the directory that contains them:
 
     ./tictactoe
 
+If an image cannot be loaded (for example, when started from another
+directory), or SDL cannot open the window, the game prints the reason on
+stderr and exits with status 1 instead of showing a blank window.
+
 On Windows, tictactoe.exe can be clicked instead, with the PNG files kept
 next to it. That binary is prebuilt and is not rebuilt when tictactoe.cpp
 changes, so it may not match the current source.
