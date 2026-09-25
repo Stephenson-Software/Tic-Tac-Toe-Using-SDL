@@ -66,23 +66,37 @@ SDL_Texture* tieTexture = NULL;
 
 bool init() {
 	// initialize SDL
-	SDL_Init(SDL_INIT_VIDEO);
+	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+		cerr << "SDL could not initialize: " << SDL_GetError() << endl;
+		return false;
+	}
 	
 	// set texture filtering to linear
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
 	
 	// create window
 	window = SDL_CreateWindow("Tic Tac Toe", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+	if (window == NULL) {
+		cerr << "Window could not be created: " << SDL_GetError() << endl;
+		return false;
+	}
 	
 	// create renderer for window
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+	if (renderer == NULL) {
+		cerr << "Renderer could not be created: " << SDL_GetError() << endl;
+		return false;
+	}
 	
 	// initialize renderer color
 	SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	
 	// initialize PNG loading
 	int imgFlags = IMG_INIT_PNG;
-	IMG_Init(imgFlags);
+	if ((IMG_Init(imgFlags) & imgFlags) != imgFlags) {
+		cerr << "SDL_image could not initialize PNG loading: " << IMG_GetError() << endl;
+		return false;
+	}
 	
 	return true;
 }
@@ -107,7 +121,8 @@ bool loadMedia() {
 	computerWin = loadTexture("computerWin.png");
 	tieTexture = loadTexture("tie.png");
 	
-	return true;
+	// loadTexture has already reported which image failed
+	return texture != NULL && oTexture != NULL && xTexture != NULL && playerWin != NULL && computerWin != NULL && tieTexture != NULL;
 }
 
 void close() {
@@ -154,9 +169,16 @@ SDL_Texture* loadTexture(string path) {
 	
 	// load image at specified path
 	SDL_Surface* loadedSurface = IMG_Load(path.c_str());
+	if (loadedSurface == NULL) {
+		cerr << "Unable to load image " << path << ": " << IMG_GetError() << endl;
+		return NULL;
+	}
 	
 	// create texture from surface pixels
 	newTexture = SDL_CreateTextureFromSurface(renderer, loadedSurface);
+	if (newTexture == NULL) {
+		cerr << "Unable to create texture from " << path << ": " << SDL_GetError() << endl;
+	}
 	
 	// get rid of old loaded surface
 	SDL_FreeSurface(loadedSurface);
@@ -588,11 +610,12 @@ int main(int argc, char* args[]) {
 	// seed the computer's move selection once, not on every retry
 	srand(time(NULL));
 
-	// start up SDL and create window
-	init();
-	
-	// load media
-	loadMedia();
+	// start up SDL and create window, then load media; either failing leaves
+	// nothing to play, so exit rather than enter the game loop
+	if (!init() || !loadMedia()) {
+		close();
+		return 1;
+	}
 	
 	// main loop flag
 	bool running = true;
