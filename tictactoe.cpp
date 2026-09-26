@@ -633,7 +633,8 @@ int main(int argc, char* args[]) {
 			if (e.type == SDL_QUIT) {
 				running = false;
 			}
-			else if (e.type == SDL_KEYDOWN) {
+			// keys queued during the computer's turn are ignored once it has won
+			else if (e.type == SDL_KEYDOWN && checkForWinner() == "none") {
 				// select surfaces based on key press
 				switch(e.key.keysym.sym) {
 					case SDLK_q:
