@@ -13,6 +13,9 @@ using namespace std;
 const int SCREEN_WIDTH = 600;
 const int SCREEN_HEIGHT = 600;
 
+// pause after each redraw, about 60 frames a second, so the loops don't spin
+const int FRAME_DELAY_MS = 16;
+
 // tracker
 int moves;
 
@@ -307,6 +310,8 @@ void winScreen() {
 		
 		// update screen
 		SDL_RenderPresent(renderer);
+
+		SDL_Delay(FRAME_DELAY_MS);
 	}
 }
 
@@ -348,6 +353,8 @@ void loseScreen() {
 		
 		// update screen
 		SDL_RenderPresent(renderer);
+
+		SDL_Delay(FRAME_DELAY_MS);
 	}
 }
 
@@ -389,6 +396,8 @@ void tieScreen() {
 		
 		// update screen
 		SDL_RenderPresent(renderer);
+
+		SDL_Delay(FRAME_DELAY_MS);
 	}
 }
 
@@ -714,6 +723,7 @@ int main(int argc, char* args[]) {
 		
 		if (running) {
 			renderBoxes();
+			SDL_Delay(FRAME_DELAY_MS);
 		}
 	}
 	
