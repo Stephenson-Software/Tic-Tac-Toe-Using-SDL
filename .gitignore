@@ -6,3 +6,7 @@ a.out
 
 # the tracked tictactoe.exe is deliberately not ignored here; ignore rules do
 # not apply to already-tracked files, and whether it stays tracked is open
+
+# browser build output (web/build.sh) and its deploy version (CI)
+web/build/
+web/arcade-version.txt
