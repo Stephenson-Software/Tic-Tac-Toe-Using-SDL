@@ -531,6 +531,20 @@ void renderBoxes() {
 
 }
 
+// the key for the box under a click or tap, laid out like the keys themselves:
+// Q W E / A S D / Z X C
+SDL_Keycode keyForClick(int x, int y) {
+	const SDL_Keycode keys[3][3] = {
+		{SDLK_q, SDLK_w, SDLK_e},
+		{SDLK_a, SDLK_s, SDLK_d},
+		{SDLK_z, SDLK_x, SDLK_c}
+	};
+	if (x < 0 || y < 0 || x >= SCREEN_WIDTH || y >= SCREEN_HEIGHT) {
+		return SDLK_UNKNOWN;
+	}
+	return keys[y * 3 / SCREEN_HEIGHT][x * 3 / SCREEN_WIDTH];
+}
+
 void computerTurn() {
 	if (moves < 9) {
 		
@@ -613,8 +627,11 @@ void computerTurn() {
 int main(int argc, char* args[]) {
 	// One startup event to trace, sent in the background; see usageReporting.h
 	// and "Usage reporting" in README.txt.txt.
+	// The browser build does not report: there is no curl or config directory there.
+#ifndef __EMSCRIPTEN__
 	usage_reporting::UsageReporter usageReporting;
 	usageReporting.reportStartup();
+#endif
 
 	// seed the computer's move selection once, not on every retry
 	srand(time(NULL));
@@ -642,10 +659,13 @@ int main(int argc, char* args[]) {
 			if (e.type == SDL_QUIT) {
 				running = false;
 			}
-			// keys queued during the computer's turn are ignored once it has won
-			else if (e.type == SDL_KEYDOWN && checkForWinner() == "none") {
+			// keys and clicks queued during the computer's turn are ignored once it has won
+			else if ((e.type == SDL_KEYDOWN || (e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT)) && checkForWinner() == "none") {
+				// a click (or a tap, which SDL reports as a click) on a box counts as its key
+				SDL_Keycode key = e.type == SDL_KEYDOWN ? e.key.keysym.sym : keyForClick(e.button.x, e.button.y);
+
 				// select surfaces based on key press
-				switch(e.key.keysym.sym) {
+				switch(key) {
 					case SDLK_q:
 					if (topLeftT == texture) {
 						topLeftT = xTexture;

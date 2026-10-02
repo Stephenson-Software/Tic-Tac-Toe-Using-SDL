@@ -8,6 +8,35 @@ Z X C
 
 Each of these correspond to one of the nine boxes represented once the game is launched.
 
+A box can also be clicked (or tapped, on a touch screen) instead of pressing its key.
+
+Play in your browser:
+
+The game also runs in a web browser, built with Emscripten
+(https://emscripten.org):
+
+    https://tic-tac-toe-sdl.play.danielstephenson.dev
+    more games: https://danielstephenson.dev/play
+
+There, boxes are clicked or tapped (the keys work too), and the "New game"
+button under the board starts again after a result. The browser version does
+not send usage reports.
+
+To build it, install and activate the Emscripten SDK
+(https://emscripten.org/docs/getting_started/downloads.html), then run:
+
+    web/build.sh
+
+This writes index.html, index.js, index.wasm and index.data (the six
+preloaded PNG files) to web/build/. Serve that directory over HTTP to play it
+locally, for example:
+
+    python3 -m http.server --directory web/build 8000
+
+and open http://localhost:8000. The page itself is web/shell.html. The
+"Browser build" workflow builds it on every pull request and deploys it to the
+address above.
+
 Building from source:
 
 You need a C++ compiler, the SDL2 development package, and the SDL2_image
