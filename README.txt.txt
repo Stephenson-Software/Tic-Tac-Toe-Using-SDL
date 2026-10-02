@@ -10,10 +10,12 @@ Each of these correspond to one of the nine boxes represented once the game is l
 
 A box can also be clicked (or tapped, on a touch screen) instead of pressing its key.
 
-A box that already holds an X or an O ignores its key and clicks. After each X,
-the computer waits a second and then draws an O in a randomly chosen empty box.
+A box that already holds an X or an O ignores its key and clicks. After each X
+that does not end the game, the computer waits a second and then draws an O in
+a randomly chosen empty box.
 
-Three in a row, column or diagonal wins; a full board with no line is a tie.
+Three of the same mark in a row, column or diagonal wins; a full board with no
+line is a tie.
 About a second after the game ends, the whole window shows the result (you
 win, the computer wins, or a tie) and stays that way until the window is
 closed. There is no new-game key: to play again, start the game again.
