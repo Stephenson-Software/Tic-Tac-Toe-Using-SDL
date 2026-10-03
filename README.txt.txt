@@ -1,3 +1,5 @@
+Play in your browser: https://danielstephenson.dev/play/tic-tac-toe-using-sdl
+
 To play the game, you need to draw an X in a box each time it is your turn.
 
 To draw an X in a box, tap the corresponding key:
