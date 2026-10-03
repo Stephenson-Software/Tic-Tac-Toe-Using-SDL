@@ -87,9 +87,10 @@ The window is 600x600.
 Usage reporting:
 
 The game reports to trace (https://trace.danielstephenson.dev) by default: one
-startup event per launch, carrying the program name (Tic-Tac-Toe-Using-SDL) and
-its version from version.txt. Nothing about you, your machine, your IP address
-or the game is sent.
+startup event per launch, carrying the program name (Tic-Tac-Toe-Using-SDL),
+its version from version.txt, and a random installation ID. Nothing about you,
+your machine or the game is sent (the trace server sees the IP address of the
+request, as every web server does).
 
 The first run prints one line saying so on stderr and writes a small settings
 file, usage-reporting.conf, to $XDG_CONFIG_HOME/Tic-Tac-Toe-Using-SDL/ (by
@@ -101,6 +102,16 @@ To turn reporting off:
   - set TRACE_USAGE_REPORTING=off or DO_NOT_TRACK=1 in the environment (this
     turns it off for every trace-reporting program, and nothing is printed or
     written).
+
+The installation ID is a random UUID, made the first time reporting is on and
+kept in a file named trace-install-id in $XDG_DATA_HOME/tic-tac-toe-using-sdl/
+(by default ~/.local/share/tic-tac-toe-using-sdl/; ~/Library/Application
+Support/tic-tac-toe-using-sdl/ on macOS, %APPDATA%\tic-tac-toe-using-sdl\ on
+Windows). It is not derived from anything about you or your machine; it only
+lets trace count installations rather than launches. Delete the file to reset
+it. Setting TRACE_INSTALL_ID sends that value instead, and the file is left
+alone. Every opt-out above also stops the ID: with reporting off, the file is
+never created, read or sent.
 
 The event is sent in the background by the vendored trace-client-cpp header
 (trace_client.hpp, https://github.com/Stephenson-Software/trace-client-cpp)
