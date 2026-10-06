@@ -47,9 +47,9 @@ locally, for example:
 
 and open http://localhost:8000. The page itself is web/shell.html. The
 "Browser build" workflow builds it on every pull request and every push to
-master. Pull requests are only built; it is deployed to the address above from
-master pushes (when deployment is turned on for the repository) or when the
-workflow is run by hand.
+master. Pull requests are only built; the game is deployed to
+tic-tac-toe-sdl.play.danielstephenson.dev from master pushes (when deployment
+is turned on for the repository) or when the workflow is run by hand.
 
 Building from source:
 
