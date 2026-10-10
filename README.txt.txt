@@ -22,7 +22,7 @@ About a second after the game ends, the whole window shows the result (you
 win, the computer wins, or a tie) and stays that way until the window is
 closed. There is no new-game key: to play again, start the game again.
 
-Play in your browser:
+Browser version:
 
 The game also runs in a web browser, built with Emscripten
 (https://emscripten.org):
@@ -121,7 +121,9 @@ through the system curl; if curl is missing or the machine is offline, nothing
 is sent and the game is unaffected. The prebuilt tictactoe.exe predates this
 and does not report until it is rebuilt.
 TIC_TAC_TOE_USING_SDL_USAGE_REPORTING_ENDPOINT points reporting at another
-server, e.g. a local one while testing.
+server, e.g. a local one while testing. A line endpoint=<url> in
+usage-reporting.conf does the same; the environment variable wins when both
+are set.
 Details: https://github.com/Stephenson-Software/trace#usage-reporting
 
 Note:
