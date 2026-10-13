@@ -94,6 +94,12 @@ its version from version.txt, and a random installation ID. Nothing about you,
 your machine or the game is sent (the trace server sees the IP address of the
 request, as every web server does).
 
+Like the PNG files, version.txt is read from the directory the game is started
+in; when it is not there, the version is sent as "unknown". A build can fix
+the version instead, which then ignores version.txt:
+
+    g++ ... -DTIC_TAC_TOE_VERSION='"0.1.0"' ...
+
 The first run prints one line saying so on stderr and writes a small settings
 file, usage-reporting.conf, to $XDG_CONFIG_HOME/Tic-Tac-Toe-Using-SDL/ (by
 default ~/.config/Tic-Tac-Toe-Using-SDL/; ~/Library/Application Support/
