@@ -95,7 +95,7 @@ your machine or the game is sent (the trace server sees the IP address of the
 request, as every web server does).
 
 Like the PNG files, version.txt is read from the directory the game is started
-in; when it is not there, the version is sent as "unknown". A build can fix
+in; when it is not there, the version is sent as "unknown". A build can set
 the version instead, which then ignores version.txt:
 
     g++ ... -DTIC_TAC_TOE_VERSION='"0.1.0"' ...
