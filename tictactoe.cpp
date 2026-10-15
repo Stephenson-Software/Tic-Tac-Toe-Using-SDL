@@ -1,4 +1,4 @@
-// using sDL, SDL_image, iostream, string
+// using SDL, SDL_image, iostream, string, time, usage reporting
 #include <SDL.h>
 #include <SDL_image.h>
 #include <iostream>
@@ -297,13 +297,13 @@ void winScreen() {
 		SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
 		SDL_RenderClear(renderer);
 
-		// full screen viewpoint
-		SDL_Rect bottomRight;
-		bottomRight.x = 0;
-		bottomRight.y = 0;
-		bottomRight.w = SCREEN_WIDTH;
-		bottomRight.h = SCREEN_HEIGHT;
-		SDL_RenderSetViewport(renderer, &bottomRight);
+		// full screen viewport
+		SDL_Rect fullScreen;
+		fullScreen.x = 0;
+		fullScreen.y = 0;
+		fullScreen.w = SCREEN_WIDTH;
+		fullScreen.h = SCREEN_HEIGHT;
+		SDL_RenderSetViewport(renderer, &fullScreen);
 
 		// render texture to screen
 		SDL_RenderCopy(renderer, playerWin, NULL, NULL);
@@ -340,13 +340,13 @@ void loseScreen() {
 		SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
 		SDL_RenderClear(renderer);
 
-		// full screen viewpoint
-		SDL_Rect bottomRight;
-		bottomRight.x = 0;
-		bottomRight.y = 0;
-		bottomRight.w = SCREEN_WIDTH;
-		bottomRight.h = SCREEN_HEIGHT;
-		SDL_RenderSetViewport(renderer, &bottomRight);
+		// full screen viewport
+		SDL_Rect fullScreen;
+		fullScreen.x = 0;
+		fullScreen.y = 0;
+		fullScreen.w = SCREEN_WIDTH;
+		fullScreen.h = SCREEN_HEIGHT;
+		SDL_RenderSetViewport(renderer, &fullScreen);
 		
 		// render texture to screen
 		SDL_RenderCopy(renderer, computerWin, NULL, NULL);
@@ -383,13 +383,13 @@ void tieScreen() {
 		SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
 		SDL_RenderClear(renderer);
 
-		// full screen viewpoint
-		SDL_Rect bottomRight;
-		bottomRight.x = 0;
-		bottomRight.y = 0;
-		bottomRight.w = SCREEN_WIDTH;
-		bottomRight.h = SCREEN_HEIGHT;
-		SDL_RenderSetViewport(renderer, &bottomRight);
+		// full screen viewport
+		SDL_Rect fullScreen;
+		fullScreen.x = 0;
+		fullScreen.y = 0;
+		fullScreen.w = SCREEN_WIDTH;
+		fullScreen.h = SCREEN_HEIGHT;
+		SDL_RenderSetViewport(renderer, &fullScreen);
 
 		// render texture to screen
 		SDL_RenderCopy(renderer, tieTexture, NULL, NULL);
@@ -511,19 +511,19 @@ void renderBoxes() {
 	string result = checkForWinner();
 
 	if (result == "player") {
-		//Wait 1 seconds
+		// wait 1 second
 		SDL_Delay(1000);
 		
 		winScreen();
 	}
 	if (result == "computer") {
-		//Wait 1 seconds
+		// wait 1 second
 		SDL_Delay(1000);
 		
 		loseScreen();
 	}
 	if (result == "tie") {
-		//Wait 1 seconds
+		// wait 1 second
 		SDL_Delay(1000);
 		
 		tieScreen();
@@ -555,7 +555,7 @@ void computerTurn() {
 			return;
 		}
 		
-		//Wait 1 seconds
+		// wait 1 second
 		SDL_Delay(1000);
 		
 		bool turn = true;
