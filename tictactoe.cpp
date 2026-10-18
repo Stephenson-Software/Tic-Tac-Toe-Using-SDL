@@ -442,7 +442,7 @@ void renderBoxes() {
 	// middle left viewport
 	SDL_Rect middleLeft;
 	middleLeft.x = 0;
-	middleLeft.y = SCREEN_WIDTH/3;
+	middleLeft.y = SCREEN_HEIGHT/3;
 	middleLeft.w = SCREEN_WIDTH/3;
 	middleLeft.h = SCREEN_HEIGHT/3;
 	SDL_RenderSetViewport(renderer, &middleLeft);
@@ -453,7 +453,7 @@ void renderBoxes() {
 	// middle middle viewport
 	SDL_Rect middleMiddle;
 	middleMiddle.x = SCREEN_WIDTH/3;
-	middleMiddle.y = SCREEN_WIDTH/3;
+	middleMiddle.y = SCREEN_HEIGHT/3;
 	middleMiddle.w = SCREEN_WIDTH/3;
 	middleMiddle.h = SCREEN_HEIGHT/3;
 	SDL_RenderSetViewport(renderer, &middleMiddle);
@@ -464,7 +464,7 @@ void renderBoxes() {
 	// middle right viewport
 	SDL_Rect middleRight;
 	middleRight.x = SCREEN_WIDTH/3 * 2;
-	middleRight.y = SCREEN_WIDTH/3;
+	middleRight.y = SCREEN_HEIGHT/3;
 	middleRight.w = SCREEN_WIDTH/3;
 	middleRight.h = SCREEN_HEIGHT/3;
 	SDL_RenderSetViewport(renderer, &middleRight);
@@ -475,7 +475,7 @@ void renderBoxes() {
 	// bottom left viewport
 	SDL_Rect bottomLeft;
 	bottomLeft.x = 0;
-	bottomLeft.y = SCREEN_WIDTH/3 * 2;
+	bottomLeft.y = SCREEN_HEIGHT/3 * 2;
 	bottomLeft.w = SCREEN_WIDTH/3;
 	bottomLeft.h = SCREEN_HEIGHT/3;
 	SDL_RenderSetViewport(renderer, &bottomLeft);
@@ -486,7 +486,7 @@ void renderBoxes() {
 	// bottom middle viewport
 	SDL_Rect bottomMiddle;
 	bottomMiddle.x = SCREEN_WIDTH/3;
-	bottomMiddle.y = SCREEN_WIDTH/3 * 2;
+	bottomMiddle.y = SCREEN_HEIGHT/3 * 2;
 	bottomMiddle.w = SCREEN_WIDTH/3;
 	bottomMiddle.h = SCREEN_HEIGHT/3;
 	SDL_RenderSetViewport(renderer, &bottomMiddle);
@@ -497,7 +497,7 @@ void renderBoxes() {
 	// bottom right viewport
 	SDL_Rect bottomRight;
 	bottomRight.x = SCREEN_WIDTH/3 * 2;
-	bottomRight.y = SCREEN_WIDTH/3 * 2;
+	bottomRight.y = SCREEN_HEIGHT/3 * 2;
 	bottomRight.w = SCREEN_WIDTH/3;
 	bottomRight.h = SCREEN_HEIGHT/3;
 	SDL_RenderSetViewport(renderer, &bottomRight);
