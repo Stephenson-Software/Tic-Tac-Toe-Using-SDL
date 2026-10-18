@@ -626,7 +626,7 @@ void computerTurn() {
 
 int main(int argc, char* args[]) {
 	// One startup event to trace, sent in the background; see usageReporting.h
-	// and "Usage reporting" in README.txt.txt.
+	// and "Usage reporting" in README.md.
 	// The browser build does not report: there is no curl or config directory there.
 #ifndef __EMSCRIPTEN__
 	usage_reporting::UsageReporter usageReporting;
