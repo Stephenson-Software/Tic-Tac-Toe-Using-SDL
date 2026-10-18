@@ -1,5 +1,5 @@
 # The game has no test suite; this proves it still builds with the command
-# README.txt.txt documents.
+# README.md documents.
 name: Build
 
 on:
@@ -11,7 +11,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     # Nothing here runs the game, but if a step ever does, it must not count
-    # as a use of it (see "Usage reporting" in README.txt.txt).
+    # as a use of it (see "Usage reporting" in README.md).
     env:
       TRACE_USAGE_REPORTING: "off"
     steps:

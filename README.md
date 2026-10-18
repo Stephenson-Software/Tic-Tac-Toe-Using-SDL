@@ -1,12 +1,18 @@
+# Tic-Tac-Toe-Using-SDL
+
 Play in your browser: https://danielstephenson.dev/play/tic-tac-toe-using-sdl
+
+![One game against the computer, ending in a win for X](docs/images/gameplay.gif)
+
+*One real game of the native build, played with the keyboard under a virtual display (see "Screenshots" below).*
 
 To play the game, you need to draw an X in a box each time it is your turn.
 
 To draw an X in a box, tap the corresponding key:
 
-Q W E
-A S D
-Z X C
+    Q W E
+    A S D
+    Z X C
 
 Each of these correspond to one of the nine boxes represented once the game is launched.
 
@@ -18,11 +24,12 @@ a randomly chosen empty box.
 
 Three of the same mark in a row, column or diagonal wins; a full board with no
 line is a tie.
+
 About a second after the game ends, the whole window shows the result (you
 win, the computer wins, or a tie) and stays that way until the window is
 closed. There is no new-game key: to play again, start the game again.
 
-Browser version:
+## Browser version
 
 The game also runs in a web browser, built with Emscripten
 (https://emscripten.org):
@@ -51,7 +58,7 @@ master. Pull requests are only built; the game is deployed to
 tic-tac-toe-sdl.play.danielstephenson.dev from master pushes (when deployment
 is turned on for the repository) or when the workflow is run by hand.
 
-Building from source:
+## Building from source
 
 You need a C++ compiler, the SDL2 development package, and the SDL2_image
 development package with PNG support.
@@ -69,7 +76,7 @@ Without pkg-config, the same thing spelled out:
 -pthread is there because the game reports usage on a background thread (see
 "Usage reporting" below).
 
-Running:
+## Running
 
 The six PNG files are loaded by relative path, so the game has to be started
 from the directory that contains them:
@@ -86,7 +93,7 @@ changes, so it may not match the current source.
 
 The window is 600x600.
 
-Usage reporting:
+## Usage reporting
 
 The game reports to trace (https://trace.danielstephenson.dev) by default: one
 startup event per launch, carrying the program name (Tic-Tac-Toe-Using-SDL),
@@ -126,12 +133,26 @@ The event is sent in the background by the vendored trace-client-cpp header
 through the system curl; if curl is missing or the machine is offline, nothing
 is sent and the game is unaffected. The prebuilt tictactoe.exe predates this
 and does not report until it is rebuilt.
+
 TIC_TAC_TOE_USING_SDL_USAGE_REPORTING_ENDPOINT points reporting at another
 server, e.g. a local one while testing. A line endpoint=<url> in
 usage-reporting.conf does the same; the environment variable wins when both
 are set.
+
 Details: https://github.com/Stephenson-Software/trace#usage-reporting
 
-Note:
+## Screenshots
+
+`docs/images/gameplay.gif` was recorded from the native build run under Xvfb,
+with keys sent by `xdotool` and frames grabbed by ImageMagick. Usage reporting
+is turned off for the recording. To record a new one (the computer's moves are
+random, so every run is a different game):
+
+    bash docs/capture.sh
+
+It needs `Xvfb`, `xdotool` and ImageMagick in addition to the build
+dependencies above.
+
+## Note
 I used the SDL tutorial located at the page below as a jumping off point for this.
 http://lazyfoo.net/tutorials/SDL/index.php#Hello%20SDL
