@@ -15,7 +15,7 @@ jobs:
     env:
       TRACE_USAGE_REPORTING: "off"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Install SDL2 dependencies
         run: |
           sudo apt-get update
