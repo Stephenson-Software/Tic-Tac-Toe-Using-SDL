@@ -272,7 +272,8 @@ string checkForWinner() {
 	return winner;
 }
 
-void winScreen() {
+// shows the result (win, lose or tie) over the whole window until it is closed
+void resultScreen(SDL_Texture* result) {
 	// main loop flag
 	bool running = true;
 	
@@ -306,93 +307,7 @@ void winScreen() {
 		SDL_RenderSetViewport(renderer, &fullScreen);
 
 		// render texture to screen
-		SDL_RenderCopy(renderer, playerWin, NULL, NULL);
-		
-		// update screen
-		SDL_RenderPresent(renderer);
-
-		SDL_Delay(FRAME_DELAY_MS);
-	}
-}
-
-void loseScreen() {
-	// main loop flag
-	bool running = true;
-	
-	// event handler
-	SDL_Event e;
-	
-	// while app is running
-	while (running) {
-		
-		// handle events on queue
-		while (SDL_PollEvent(&e) != 0) {
-			
-			// user requests quit, teardown is left to main
-			if (e.type == SDL_QUIT) {
-				quitRequested = true;
-				running = false;
-			}
-			
-		}
-		
-		// clear screen
-		SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-		SDL_RenderClear(renderer);
-
-		// full screen viewport
-		SDL_Rect fullScreen;
-		fullScreen.x = 0;
-		fullScreen.y = 0;
-		fullScreen.w = SCREEN_WIDTH;
-		fullScreen.h = SCREEN_HEIGHT;
-		SDL_RenderSetViewport(renderer, &fullScreen);
-		
-		// render texture to screen
-		SDL_RenderCopy(renderer, computerWin, NULL, NULL);
-		
-		// update screen
-		SDL_RenderPresent(renderer);
-
-		SDL_Delay(FRAME_DELAY_MS);
-	}
-}
-
-void tieScreen() {
-	// main loop flag
-	bool running = true;
-	
-	// event handler
-	SDL_Event e;
-	
-	// while app is running
-	while (running) {
-		
-		// handle events on queue
-		while (SDL_PollEvent(&e) != 0) {
-			
-			// user requests quit, teardown is left to main
-			if (e.type == SDL_QUIT) {
-				quitRequested = true;
-				running = false;
-			}
-			
-		}
-		
-		// clear screen
-		SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-		SDL_RenderClear(renderer);
-
-		// full screen viewport
-		SDL_Rect fullScreen;
-		fullScreen.x = 0;
-		fullScreen.y = 0;
-		fullScreen.w = SCREEN_WIDTH;
-		fullScreen.h = SCREEN_HEIGHT;
-		SDL_RenderSetViewport(renderer, &fullScreen);
-
-		// render texture to screen
-		SDL_RenderCopy(renderer, tieTexture, NULL, NULL);
+		SDL_RenderCopy(renderer, result, NULL, NULL);
 		
 		// update screen
 		SDL_RenderPresent(renderer);
@@ -510,23 +425,17 @@ void renderBoxes() {
 
 	string result = checkForWinner();
 
-	if (result == "player") {
+	if (result != "none") {
 		// wait 1 second
 		SDL_Delay(1000);
 		
-		winScreen();
-	}
-	if (result == "computer") {
-		// wait 1 second
-		SDL_Delay(1000);
-		
-		loseScreen();
-	}
-	if (result == "tie") {
-		// wait 1 second
-		SDL_Delay(1000);
-		
-		tieScreen();
+		if (result == "player") {
+			resultScreen(playerWin);
+		} else if (result == "computer") {
+			resultScreen(computerWin);
+		} else {
+			resultScreen(tieTexture);
+		}
 	}
 
 }
