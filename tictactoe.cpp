@@ -568,8 +568,9 @@ int main(int argc, char* args[]) {
 			if (e.type == SDL_QUIT) {
 				running = false;
 			}
-			// keys and clicks queued during the computer's turn are ignored once it has won
-			else if ((e.type == SDL_KEYDOWN || (e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT)) && checkForWinner() == "none") {
+			// keys and clicks queued after a quit request, or during the computer's
+			// turn once it has won, are ignored
+			else if (running && (e.type == SDL_KEYDOWN || (e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT)) && checkForWinner() == "none") {
 				// a click (or a tap, which SDL reports as a click) on a box counts as its key
 				SDL_Keycode key = e.type == SDL_KEYDOWN ? e.key.keysym.sym : keyForClick(e.button.x, e.button.y);
 
