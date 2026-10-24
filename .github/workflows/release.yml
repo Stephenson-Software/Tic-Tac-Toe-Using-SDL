@@ -1,0 +1,282 @@
+# Builds the game for Linux x64 and Windows x64 and attaches the downloads to a
+# GitHub release.
+#
+#   - Pushing a version tag (v0.1.0: "v" and the version in version.txt) or
+#     publishing a release on one builds both and uploads them to that
+#     release. A pushed tag with no release yet gets a pre-release created for
+#     it.
+#   - A pull request that changes this workflow, tictactoe.cpp or version.txt
+#     runs the same builds as a dry run, so a packaging change is checked
+#     before it merges.
+#   - workflow_dispatch builds both from the chosen branch and keeps them as
+#     workflow artifacts. Give it a tag to build that tag and attach the
+#     builds to its existing release instead.
+#
+# Each download is the game, the six PNG files it loads from its own
+# directory, the licence and README. See docs/RELEASING.md.
+name: Release
+
+on:
+  release:
+    types: [published]
+  push:
+    tags: ["v[0-9]+.[0-9]+.[0-9]+"]
+  pull_request:
+    paths:
+      - ".github/workflows/release.yml"
+      - "tictactoe.cpp"
+      - "version.txt"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing release tag to build and attach to (empty = dry run: workflow artifacts only)"
+        required: false
+        default: ""
+
+# A release created with gh release create also pushes its tag, so both events
+# fire for one release. Keyed on the tag, the later run replaces the earlier.
+concurrency:
+  group: release-${{ github.event.release.tag_name || inputs.tag || github.ref_name }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  # Nothing here is a real use of the game (see the README's "Usage reporting").
+  TRACE_USAGE_REPORTING: "off"
+
+jobs:
+  meta:
+    name: Resolve the version
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.resolve.outputs.tag }}
+      ref: ${{ steps.resolve.outputs.ref }}
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Resolve tag and ref
+        id: resolve
+        env:
+          EVENT: ${{ github.event_name }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          INPUT_TAG: ${{ inputs.tag }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          case "$EVENT" in
+            release)           tag="$RELEASE_TAG" ;;
+            push)              tag="$REF_NAME" ;;
+            workflow_dispatch) tag="$INPUT_TAG" ;;
+            *)                 tag="" ;;
+          esac
+          if [ -n "$tag" ]; then
+            if ! [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+              echo "::error::Release tags are v and a version number, such as v0.1.0, not '$tag'."
+              exit 1
+            fi
+            echo "tag=$tag" >> "$GITHUB_OUTPUT"
+            echo "ref=refs/tags/$tag" >> "$GITHUB_OUTPUT"
+          else
+            echo "ref=$GITHUB_SHA" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ steps.resolve.outputs.ref }}
+
+      # The version the game reports (usage reporting) must be the version it
+      # is released as.
+      - name: Read version.txt and check it against the tag
+        id: version
+        env:
+          TAG: ${{ steps.resolve.outputs.tag }}
+        run: |
+          version=$(tr -d '[:space:]' < version.txt)
+          if ! [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::version.txt must hold a version such as 0.1.0, not '$version'."
+            exit 1
+          fi
+          if [ -n "$TAG" ] && [ "v$version" != "$TAG" ]; then
+            echo "::error::version.txt says $version but the tag is $TAG. Set version.txt first (docs/RELEASING.md)."
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "Building Tic-Tac-Toe $version (tag: ${TAG:-none, dry run})"
+
+  linux:
+    name: Linux x64 build
+    needs: meta
+    runs-on: ubuntu-22.04
+    env:
+      VERSION: ${{ needs.meta.outputs.version }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.meta.outputs.ref }}
+
+      - name: Install SDL2 dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libsdl2-dev libsdl2-image-dev xvfb
+
+      # The version is built in, so the game reports it wherever it is started.
+      - name: Build
+        run: |
+          g++ -std=c++17 -O2 -Wall -pthread -DTIC_TAC_TOE_VERSION="\"$VERSION\"" tictactoe.cpp -o tictactoe \
+            $(pkg-config --cflags --libs sdl2 SDL2_image)
+
+      - name: Assemble the package
+        run: |
+          dir="dist/TicTacToe-$VERSION-linux-x64"
+          mkdir -p "$dir"
+          cp tictactoe "$dir/tictactoe"
+          strip "$dir/tictactoe"
+          cp viewport.png x.png o.png playerWin.png computerWin.png tie.png "$dir/"
+          cp LICENSE "$dir/LICENSE.txt"
+          cp README.md "$dir/README.md"
+          cp docs/README-download.txt "$dir/README-download.txt"
+          ldd "$dir/tictactoe"
+
+      # Started from its own directory, the packaged game loads all six images
+      # and is still running after five seconds; started anywhere else it must
+      # stop at once on the missing images, so the check can tell them apart.
+      - name: The packaged game starts
+        run: |
+          cd "dist/TicTacToe-$VERSION-linux-x64"
+          set +e
+          xvfb-run -a timeout 5 ./tictactoe; here=$?
+          (cd "$RUNNER_TEMP" && xvfb-run -a timeout 5 "$GITHUB_WORKSPACE/dist/TicTacToe-$VERSION-linux-x64/tictactoe"); elsewhere=$?
+          set -e
+          echo "from its directory: exit $here (124 = still running); from elsewhere: exit $elsewhere"
+          test "$here" = 124
+          test "$elsewhere" = 1
+
+      - name: Archive
+        run: |
+          cd dist
+          tar -czf "TicTacToe-$VERSION-linux-x64.tar.gz" "TicTacToe-$VERSION-linux-x64"
+          sha256sum "TicTacToe-$VERSION-linux-x64.tar.gz" > "TicTacToe-$VERSION-linux-x64.tar.gz.sha256"
+          ls -l
+
+      - name: Upload the package
+        uses: actions/upload-artifact@v4
+        with:
+          name: TicTacToe-${{ env.VERSION }}-linux-x64
+          path: |
+            dist/TicTacToe-${{ env.VERSION }}-linux-x64.tar.gz
+            dist/TicTacToe-${{ env.VERSION }}-linux-x64.tar.gz.sha256
+          if-no-files-found: error
+
+  windows:
+    name: Windows x64 build
+    needs: meta
+    runs-on: windows-2022
+    env:
+      VERSION: ${{ needs.meta.outputs.version }}
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.meta.outputs.ref }}
+
+      - name: Set up MSYS2 with SDL2 and SDL2_image
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-pkgconf
+            mingw-w64-x86_64-SDL2
+            mingw-w64-x86_64-SDL2_image
+            zip
+
+      # -mwindows: no console window behind the game. The C++ runtime is linked
+      # in; SDL2, SDL2_image and what they load ship beside the executable.
+      - name: Build
+        run: |
+          g++ -std=c++17 -O2 -Wall -pthread -DTIC_TAC_TOE_VERSION="\"$VERSION\"" tictactoe.cpp -o tictactoe.exe \
+            $(pkg-config --cflags --libs sdl2 SDL2_image) -static-libgcc -static-libstdc++ -mwindows
+
+      - name: Assemble the package
+        run: |
+          dir="dist/TicTacToe-$VERSION-win-x64"
+          mkdir -p "$dir"
+          cp tictactoe.exe "$dir/"
+          # Every DLL the game loads from MINGW64, found from its import tree.
+          ldd tictactoe.exe | awk '/\/mingw64\/bin\//{print $3}' | sort -u | while read -r dll; do cp "$dll" "$dir/"; done
+          cp viewport.png x.png o.png playerWin.png computerWin.png tie.png "$dir/"
+          cp LICENSE "$dir/LICENSE.txt"
+          cp README.md "$dir/README.md"
+          cp docs/README-download.txt "$dir/README-download.txt"
+          ls -l "$dir"
+
+      # With only the download's DLLs on PATH: from its own directory the game
+      # is still running after five seconds; from elsewhere it stops at once
+      # on the missing images.
+      - name: The packaged game starts
+        shell: pwsh
+        run: |
+          $dir = Resolve-Path "dist/TicTacToe-$env:VERSION-win-x64"
+          $env:PATH = "$dir;C:\Windows\System32;C:\Windows"
+          $p = Start-Process -FilePath "$dir\tictactoe.exe" -WorkingDirectory $dir -PassThru
+          Start-Sleep -Seconds 5
+          if ($p.HasExited) { Write-Error "tictactoe.exe exited with $($p.ExitCode) when started from its own directory"; exit 1 }
+          Stop-Process -Id $p.Id -Force
+          $q = Start-Process -FilePath "$dir\tictactoe.exe" -WorkingDirectory $env:RUNNER_TEMP -PassThru
+          if (-not $q.WaitForExit(10000)) { Stop-Process -Id $q.Id -Force; Write-Error "started from elsewhere it did not stop on the missing images"; exit 1 }
+          if ($q.ExitCode -ne 1) { Write-Error "started from elsewhere it exited with $($q.ExitCode), not 1"; exit 1 }
+          Write-Host "from its directory: still running; from elsewhere: exit 1"
+
+      - name: Archive
+        run: |
+          cd dist
+          zip -qr "TicTacToe-$VERSION-win-x64.zip" "TicTacToe-$VERSION-win-x64"
+          sha256sum "TicTacToe-$VERSION-win-x64.zip" > "TicTacToe-$VERSION-win-x64.zip.sha256"
+          ls -l
+
+      - name: Upload the package
+        uses: actions/upload-artifact@v4
+        with:
+          name: TicTacToe-${{ env.VERSION }}-win-x64
+          path: |
+            dist/TicTacToe-${{ env.VERSION }}-win-x64.zip
+            dist/TicTacToe-${{ env.VERSION }}-win-x64.zip.sha256
+          if-no-files-found: error
+
+  attach:
+    name: Attach to the release
+    needs: [meta, linux, windows]
+    if: needs.meta.outputs.tag != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      TAG: ${{ needs.meta.outputs.tag }}
+    steps:
+      - name: Download the packages
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      # A tag pushed on its own has no release yet; one is made as a
+      # pre-release. A release made with GITHUB_TOKEN does not start this
+      # workflow again.
+      - name: Make sure the release exists
+        run: |
+          if ! gh release view "$TAG" > /dev/null 2>&1; then
+            gh release create "$TAG" --verify-tag --prerelease --generate-notes --title "Tic-Tac-Toe $TAG"
+          fi
+
+      - name: Upload to the release
+        run: |
+          ls -l dist
+          gh release upload "$TAG" dist/* --clobber

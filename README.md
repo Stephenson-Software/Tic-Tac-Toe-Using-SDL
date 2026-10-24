@@ -58,6 +58,12 @@ master. Pull requests are only built; the game is deployed to
 tic-tac-toe-sdl.play.danielstephenson.dev from master pushes (when deployment
 is turned on for the repository) or when the workflow is run by hand.
 
+## Downloads
+
+Releases carry a Linux x64 and a Windows x64 download, built from the tagged
+commit by `.github/workflows/release.yml`; each has a `.sha256` beside it. How a
+release is made: [docs/RELEASING.md](docs/RELEASING.md).
+
 ## Building from source
 
 You need a C++ compiler, the SDL2 development package, and the SDL2_image
