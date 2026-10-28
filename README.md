@@ -60,9 +60,13 @@ is turned on for the repository) or when the workflow is run by hand.
 
 ## Downloads
 
-Releases carry a Linux x64 and a Windows x64 download, built from the tagged
-commit by `.github/workflows/release.yml`; each has a `.sha256` beside it. How a
-release is made: [docs/RELEASING.md](docs/RELEASING.md).
+[Releases](https://github.com/Stephenson-Software/Tic-Tac-Toe-Using-SDL/releases)
+carry a Linux x64 and a Windows x64 download, built from the tagged commit by
+`.github/workflows/release.yml`; each has a `.sha256` beside it. Each download
+is the game, the six PNG files, the licence, this README and a
+README-download.txt saying how to start it; the Windows one also carries the
+SDL2 and SDL2_image DLLs. How a release is made:
+[docs/RELEASING.md](docs/RELEASING.md).
 
 ## Building from source
 
@@ -93,9 +97,13 @@ If an image cannot be loaded (for example, when started from another
 directory), or SDL cannot open the window, the game prints the reason on
 stderr and exits with status 1 instead of showing a blank window.
 
-On Windows, tictactoe.exe can be clicked instead, with the PNG files kept
-next to it. That binary is prebuilt and is not rebuilt when tictactoe.cpp
-changes, so it may not match the current source.
+On Windows, the simplest way to play without building is the Windows x64
+download from a release (see "Downloads" above): unzip it and double-click
+tictactoe.exe inside.
+
+The tictactoe.exe at the top of this repository can also be clicked, with the
+PNG files kept next to it. That binary is prebuilt and is not rebuilt when
+tictactoe.cpp changes, so it may not match the current source.
 
 The window is 600x600.
 
