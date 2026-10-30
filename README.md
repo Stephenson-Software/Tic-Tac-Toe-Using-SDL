@@ -95,7 +95,9 @@ from the directory that contains them:
 
 If an image cannot be loaded (for example, when started from another
 directory), or SDL cannot open the window, the game prints the reason on
-stderr and exits with status 1 instead of showing a blank window.
+stderr and exits with status 1 instead of showing a blank window. The Windows
+release build has no console (it is linked with -mwindows), so there the
+reason is not shown: the game just closes at once.
 
 On Windows, the simplest way to play without building is the Windows x64
 download from a release (see "Downloads" above): unzip it and double-click
