@@ -6,7 +6,8 @@
 #     release. A pushed tag with no release yet gets a pre-release created for
 #     it.
 #   - A pull request that changes this workflow, tictactoe.cpp, one of the two
-#     headers it includes (usageReporting.h, trace_client.hpp) or version.txt
+#     headers it pulls in (usageReporting.h, which includes trace_client.hpp)
+#     or version.txt
 #     runs the same builds as a dry run, so a packaging change is checked
 #     before it merges. The headers are listed because their _WIN32 code is
 #     compiled only by the Windows build here.
