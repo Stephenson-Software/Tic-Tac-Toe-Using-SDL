@@ -47,6 +47,8 @@ workflow and is not touched by it.
 
 ## Checking the packaging without a release
 
-A pull request that changes `release.yml`, `tictactoe.cpp` or `version.txt` runs
-the same builds as a dry run and keeps the archives as workflow artifacts. So
-does `gh workflow run release.yml --ref <branch>`.
+A pull request that changes `release.yml`, `tictactoe.cpp`, `usageReporting.h`,
+`trace_client.hpp` or `version.txt` runs the same builds as a dry run and keeps
+the archives as workflow artifacts. So does
+`gh workflow run release.yml --ref <branch>`. The two headers are on that list
+because their Windows-only (`_WIN32`) code is compiled by no other check.

@@ -5,9 +5,12 @@
 #     publishing a release on one builds both and uploads them to that
 #     release. A pushed tag with no release yet gets a pre-release created for
 #     it.
-#   - A pull request that changes this workflow, tictactoe.cpp or version.txt
+#   - A pull request that changes this workflow, tictactoe.cpp, one of the two
+#     headers it pulls in (usageReporting.h, which includes trace_client.hpp)
+#     or version.txt
 #     runs the same builds as a dry run, so a packaging change is checked
-#     before it merges.
+#     before it merges. The headers are listed because their _WIN32 code is
+#     compiled only by the Windows build here.
 #   - workflow_dispatch builds both from the chosen branch and keeps them as
 #     workflow artifacts. Give it a tag to build that tag and attach the
 #     builds to its existing release instead.
@@ -25,6 +28,8 @@ on:
     paths:
       - ".github/workflows/release.yml"
       - "tictactoe.cpp"
+      - "usageReporting.h"
+      - "trace_client.hpp"
       - "version.txt"
   workflow_dispatch:
     inputs:
