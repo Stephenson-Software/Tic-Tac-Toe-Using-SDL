@@ -103,9 +103,12 @@ On Windows, the simplest way to play without building is the Windows x64
 download from a release (see "Downloads" above): unzip it and double-click
 tictactoe.exe inside.
 
-The tictactoe.exe at the top of this repository can also be clicked, with the
-PNG files kept next to it. That binary is prebuilt and is not rebuilt when
-tictactoe.cpp changes, so it may not match the current source.
+The tictactoe.exe at the top of this repository does not run on its own. It is
+a 32-bit build that needs the PNG files kept next to it, and it also needs DLLs
+this repository does not carry: SDL2.dll, SDL2_image.dll and the MinGW runtime
+(libgcc_s_dw2-1.dll, libstdc++-6.dll, libmingwex-2.dll). The DLLs in the Windows
+x64 download are 64-bit and do not fit it. That binary is prebuilt and is not
+rebuilt when tictactoe.cpp changes, so it may not match the current source.
 
 The window is 600x600.
 
