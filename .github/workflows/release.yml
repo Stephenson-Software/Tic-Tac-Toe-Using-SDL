@@ -166,7 +166,7 @@ jobs:
           ls -l
 
       - name: Upload the package
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: TicTacToe-${{ env.VERSION }}-linux-x64
           path: |
@@ -246,7 +246,7 @@ jobs:
           ls -l
 
       - name: Upload the package
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: TicTacToe-${{ env.VERSION }}-win-x64
           path: |
@@ -267,7 +267,7 @@ jobs:
       TAG: ${{ needs.meta.outputs.tag }}
     steps:
       - name: Download the packages
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           path: dist
           merge-multiple: true
