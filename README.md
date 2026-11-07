@@ -130,7 +130,9 @@ The first run prints one line saying so on stderr and writes a small settings
 file, usage-reporting.conf, to $XDG_CONFIG_HOME/Tic-Tac-Toe-Using-SDL/ (by
 default ~/.config/Tic-Tac-Toe-Using-SDL/; ~/Library/Application Support/
 Tic-Tac-Toe-Using-SDL/ on macOS, %APPDATA%\Tic-Tac-Toe-Using-SDL\ on Windows).
-To turn reporting off:
+The Windows release build has no console, so there that line is not shown; the
+settings file is still written, and README-download.txt in the download says
+what is sent and how to turn it off. To turn reporting off:
 
   - set enabled=false in that file, or
   - set TRACE_USAGE_REPORTING=off or DO_NOT_TRACK=1 in the environment (this
