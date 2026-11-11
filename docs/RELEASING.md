@@ -28,7 +28,7 @@ browser build is separate: it deploys from `master` ([README](../README.md),
    | Asset | Contents |
    | --- | --- |
    | `TicTacToe-<version>-linux-x64.tar.gz` | `tictactoe`, the six PNG files, `LICENSE.txt`, `README.md`, `README-download.txt` |
-   | `TicTacToe-<version>-win-x64.zip` | `tictactoe.exe`, the SDL2 and SDL2_image DLLs, the same files |
+   | `TicTacToe-<version>-win-x64.zip` | `tictactoe.exe`, the SDL2 and SDL2_image DLLs and every other DLL it loads from MSYS2 (about thirty in all), the same files |
    | `*.sha256` | The SHA-256 of each archive |
 
    If the workflow fails, fix the cause and re-run it (`gh run rerun <id>`);
