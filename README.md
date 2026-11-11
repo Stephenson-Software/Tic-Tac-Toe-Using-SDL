@@ -65,7 +65,9 @@ carry a Linux x64 and a Windows x64 download, built from the tagged commit by
 `.github/workflows/release.yml`; each has a `.sha256` beside it. Each download
 is the game, the six PNG files, the licence, this README and a
 README-download.txt saying how to start it; the Windows one also carries the
-SDL2 and SDL2_image DLLs. How a release is made:
+SDL2 and SDL2_image DLLs and every DLL they load in turn (the image-format
+libraries, such as libpng and zlib, and the MinGW runtime), about thirty in
+all. How a release is made:
 [docs/RELEASING.md](docs/RELEASING.md).
 
 ## Building from source
