@@ -17,8 +17,8 @@ Keep the PNG files next to the game and start it from this folder: they are
 loaded by relative path.
 
   Windows x64: unzip the whole folder first, then double-click tictactoe.exe.
-  The DLLs it needs (SDL2, SDL2_image and the libraries they load) are in
-  this folder; keep them next to tictactoe.exe. If the game
+  All the DLLs it needs, SDL2 and SDL2_image among them, are in this
+  folder; keep them next to tictactoe.exe. If the game
   closes at once with no message, it could not load its PNG files: check
   that it is being started from this unzipped folder.
 
