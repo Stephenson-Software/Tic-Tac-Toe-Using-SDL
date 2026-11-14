@@ -16,7 +16,8 @@
 #     builds to its existing release instead.
 #
 # Each download is the game, the six PNG files it loads from its own
-# directory, the licence and README. See docs/RELEASING.md.
+# directory, the licence, README.md and docs/README-download.txt; the Windows
+# one also carries every DLL the game loads from MSYS2. See docs/RELEASING.md.
 name: Release
 
 on:
@@ -214,7 +215,15 @@ jobs:
           mkdir -p "$dir"
           cp tictactoe.exe "$dir/"
           # Every DLL the game loads from MINGW64, found from its import tree.
-          ldd tictactoe.exe | awk '/\/mingw64\/bin\//{print $3}' | sort -u | while read -r dll; do cp "$dll" "$dir/"; done
+          # MSYS2's SDL2 is sdl2-compat, which loads SDL3.dll at run time
+          # instead of importing it, so ldd does not list it: add it and its
+          # own imports.
+          binaries="tictactoe.exe"
+          if [ -f /mingw64/bin/SDL3.dll ]; then
+            binaries="$binaries /mingw64/bin/SDL3.dll"
+            cp /mingw64/bin/SDL3.dll "$dir/"
+          fi
+          ldd $binaries | awk '$3 ~ /\/mingw64\/bin\//{print $3}' | sort -u | while read -r dll; do cp "$dll" "$dir/"; done
           cp viewport.png x.png o.png playerWin.png computerWin.png tie.png "$dir/"
           cp LICENSE "$dir/LICENSE.txt"
           cp README.md "$dir/README.md"
