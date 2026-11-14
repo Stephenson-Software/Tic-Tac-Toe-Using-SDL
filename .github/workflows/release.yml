@@ -16,7 +16,8 @@
 #     builds to its existing release instead.
 #
 # Each download is the game, the six PNG files it loads from its own
-# directory, the licence and README. See docs/RELEASING.md.
+# directory, the licence, README.md and docs/README-download.txt; the Windows
+# one also carries every DLL the game loads from MSYS2. See docs/RELEASING.md.
 name: Release
 
 on:
