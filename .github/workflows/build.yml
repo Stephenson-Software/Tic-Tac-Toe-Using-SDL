@@ -1,5 +1,5 @@
 # The game has no test suite; this proves it still builds with the command
-# README.md documents, with -Wall added so warnings show in the log.
+# README.md documents, with -Wall added.
 name: Build
 
 on:
