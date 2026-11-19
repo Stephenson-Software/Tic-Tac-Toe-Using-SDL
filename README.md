@@ -169,7 +169,7 @@ server, e.g. a local one while testing. A line endpoint=<url> in
 usage-reporting.conf does the same; the environment variable wins when both
 are set.
 
-Details: https://github.com/Stephenson-Software/trace#usage-reporting
+Details: https://danielstephenson.dev/usage-reporting
 
 ## Screenshots
 
