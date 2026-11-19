@@ -146,7 +146,9 @@ on, yes or 1 (in any case); false, off, no, 0, a blank value or a typo turn it
 off, and so does a settings file that is there but cannot be read (it is never
 overwritten). TRACE_USAGE_REPORTING set to anything but blank, true, on, yes or
 1 turns reporting off, and so does DO_NOT_TRACK set to anything but blank, 0,
-false, off or no. test/usageReportingTest.cpp checks this.
+false, off or no. Other spellings count as off too: enable=false,
+usage_reporting.enabled=false or usage-reporting=false, and disabled=true, even
+next to enabled=true. test/usageReportingTest.cpp checks this.
 
 The installation ID is a random UUID, made the first time reporting is on and
 kept in a file named trace-install-id in $XDG_DATA_HOME/tic-tac-toe-using-sdl/
