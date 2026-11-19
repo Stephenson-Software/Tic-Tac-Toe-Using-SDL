@@ -1,4 +1,4 @@
-# The game has no test suite; this proves it still builds with the command
+# The game has no test suite beyond the usage-reporting check; this proves it still builds with the command
 # README.md documents, with -Wall added.
 name: Build
 
@@ -24,3 +24,9 @@ jobs:
         run: g++ -std=c++17 -Wall -pthread tictactoe.cpp -o tictactoe $(pkg-config --cflags --libs sdl2 SDL2_image)
       - name: Check the executable exists
         run: test -x tictactoe
+      - name: Check the usage-reporting switch
+        # Needs no SDL; checks that off, no, 0, a blank value, a typo or an
+        # unreadable settings file all keep reporting off. Sends nothing.
+        run: |
+          g++ -std=c++17 -Wall -Wextra -Werror -pthread test/usageReportingTest.cpp -o usageReportingTest
+          ./usageReportingTest
