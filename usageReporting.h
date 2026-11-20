@@ -13,6 +13,10 @@
 //     trace-reporting program honours these; checked first);
 //   - enabled=false in the settings file this writes on first run, in the
 //     user's config directory (see settingsPath()).
+// Every switch fails closed: an enabled= value other than true/on/yes/1, an
+// opt-out spelled another way (enable=false, disabled=true, ...; see
+// isNearMissOptOut()) and a settings file that is there but cannot be read
+// all turn it off too (see readSettings()).
 // The first run prints one notice saying so, on stderr; the settings file it
 // leaves behind is what keeps the notice from repeating. When the environment
 // has already opted out, nothing is printed and no file is written.
