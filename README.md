@@ -2,6 +2,10 @@
 
 Play in your browser: https://danielstephenson.dev/play/tic-tac-toe-using-sdl
 
+![The 3D board in the browser, mid-game: red X crosses and blue O rings on white tiles in a dark frame, with the New game and 3D view buttons below](docs/images/3d-hero.png)
+
+*The board in 3D, drawn by [Strata](https://github.com/Preponderous-Software/strata) in the browser build (see "Play in 3D or 2D" below).*
+
 ![One game against the computer, ending in a win for X](docs/images/gameplay.gif)
 
 *One real game of the native build, played with the keyboard under a virtual display (see "Screenshots" below).*
@@ -28,6 +32,25 @@ line is a tie.
 About a second after the game ends, the whole window shows the result (you
 win, the computer wins, or a tie) and stays that way until the window is
 closed. There is no new-game key: to play again, start the game again.
+
+## Play in 3D or 2D
+
+- **3D** (the default): https://tic-tac-toe-sdl.play.danielstephenson.dev
+- **2D**: https://tic-tac-toe-sdl.play.danielstephenson.dev/?view=2d
+
+`?view=2d` or `?view=3d` in the address picks the board for that visit, and
+the **3D view** button under the board switches between them mid-game (the
+choice is remembered on that device). With `?view=2d` nothing of the 3D board
+is downloaded. On the desktop, the game opens in 3D where Strata's library is
+beside it, and `--2d` keeps it to the 2D window:
+
+    ./tictactoe --2d
+
+<img src="docs/images/3d-play.gif" width="420" alt="A game played on the 3D board in a desktop browser: X is clicked into the middle, the computer answers with O, and X wins along a diagonal, after which the board dims under 'You Win!'"> <img src="docs/images/3d-phone.png" width="200" alt="The same win on a phone held upright: the 3D board fills the screen's width under the title, with 'You Win!' over it and the New game and 3D view buttons below">
+
+*Left: a real game on the 3D board in a desktop browser, played with clicks
+(X against the computer's random O). Right: the end of a game played with taps
+on a phone (390 x 844).*
 
 ## The board in 3D
 
@@ -261,6 +284,12 @@ random, so every run is a different game):
 
 It needs `Xvfb`, `xdotool` and ImageMagick in addition to the build
 dependencies above.
+
+The 3D pictures (`docs/images/3d-hero.png`, `3d-play.gif` and `3d-phone.png`)
+were taken from the browser build (`web/build.sh`) in headless Chromium with
+Playwright, at a desktop size (760 x 900) and a phone's (390 x 844), while a
+game was played on the 3D board with clicks and taps; the GIF was cut from that
+run's screen recording.
 
 ## Note
 I used the SDL tutorial located at the page below as a jumping off point for this.
