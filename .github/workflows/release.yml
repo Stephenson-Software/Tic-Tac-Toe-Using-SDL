@@ -17,7 +17,7 @@
 #     builds to its existing release instead.
 #
 # Each download is the game, the six PNG files it loads from its own
-# directory, Strata's library for the 3D view (libstrata.so.0.9 or strata.dll,
+# directory, Strata's library for the 3D view (libstrata.so.0.10 or strata.dll,
 # from the Strata release named in third_party/strata/VERSION, with its licence
 # and notices), the licence, README.md and docs/README-download.txt; the
 # Windows one also carries every DLL the game loads from MSYS2. See
@@ -151,7 +151,7 @@ jobs:
           cp tictactoe "$dir/tictactoe"
           strip "$dir/tictactoe"
           cp viewport.png x.png o.png playerWin.png computerWin.png tie.png "$dir/"
-          cp "$STRATA_DIR/lib/libstrata.so.0.9" "$dir/"
+          cp "$STRATA_DIR/lib/libstrata.so.0.10" "$dir/"
           cp "$STRATA_DIR/LICENSE" "$dir/STRATA-LICENSE.txt"
           cp "$STRATA_DIR/THIRD_PARTY_NOTICES.md" "$dir/STRATA-THIRD_PARTY_NOTICES.md"
           cp LICENSE "$dir/LICENSE.txt"

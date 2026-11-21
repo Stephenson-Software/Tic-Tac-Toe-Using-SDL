@@ -4,7 +4,7 @@ shows: the start, the board after each move, and the end screen.
 
     python3 test/play3d.py <game directory> <output directory> [window]
 
-The game (./tictactoe beside its PNG files and libstrata.so.0.9) is started
+The game (./tictactoe beside its PNG files and libstrata.so.0.10) is started
 with STRATA_DRIVE pointing at a socket this script listens on (Strata's
 docs/DRIVE.md); Strata draws it headless (or, with `window`, in a window on
 $DISPLAY) and takes the moves from here: keys for some boxes and clicks on

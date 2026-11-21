@@ -46,7 +46,7 @@ jobs:
           ./view3dTest
       - name: Play a game in 3D (headless, through Strata's drive channel)
         run: |
-          cp "$STRATA_LINUX"/lib/libstrata.so.0.9 .
+          cp "$STRATA_LINUX"/lib/libstrata.so.0.10 .
           python3 test/play3d.py . "$RUNNER_TEMP/play3d"
       - name: Keep the 3D game's screenshots
         if: always()
