@@ -1,10 +1,12 @@
-// using SDL, SDL_image, iostream, string, time, usage reporting
+// using SDL, SDL_image, iostream, string, time, usage reporting, the 3D view
 #include <SDL.h>
 #include <SDL_image.h>
+#include <cstring>
 #include <iostream>
 #include <string>
 #include <time.h>
 #include "usageReporting.h"
+#include "view3d_strata.h"
 
 // using declaration
 using namespace std;
@@ -22,8 +24,18 @@ int moves;
 // set when the user closes the window, from any loop
 bool quitRequested = false;
 
+// the board is shown in 3D (view3d_strata.h) unless --2d is given or 3D can't
+// run here; the 2D window is then shown as before
+bool want3D = true;
+
 // starts up SDL and creates window
 bool init();
+
+// starts up SDL with no window, behind the 3D view
+bool initOffscreen();
+
+// sets the renderer's colour and starts PNG loading
+bool initRendererAndImages();
 
 // loads media
 bool loadMedia();
@@ -41,6 +53,9 @@ SDL_Window* window = NULL;
 
 // the window renderer
 SDL_Renderer* renderer = NULL;
+
+// what the renderer draws into instead of a window, behind the 3D view
+SDL_Surface* offscreen = NULL;
 
 // possible displayed textures
 SDL_Texture* texture = NULL;
@@ -68,6 +83,14 @@ SDL_Texture* tieTexture = NULL;
 // -------------------------------------------------
 
 bool init() {
+	// with the board in its own 3D window (view3d_strata.h), SDL draws the 2D
+	// boxes into memory instead: its video subsystem would take over the GL
+	// context the 3D window draws with, and the textures still tell the marks
+	// apart
+	if (view3d::ownsWindow()) {
+		return initOffscreen();
+	}
+	
 	// initialize SDL
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
 		cerr << "SDL could not initialize: " << SDL_GetError() << endl;
@@ -91,6 +114,27 @@ bool init() {
 		return false;
 	}
 	
+	return initRendererAndImages();
+}
+
+// the 2D board drawn into memory behind the 3D window: SDL's events (for a
+// quit signal) and a software renderer on a surface, with no window
+bool initOffscreen() {
+	if (SDL_Init(SDL_INIT_EVENTS) < 0) {
+		cerr << "SDL could not initialize: " << SDL_GetError() << endl;
+		return false;
+	}
+	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
+	offscreen = SDL_CreateRGBSurfaceWithFormat(0, SCREEN_WIDTH, SCREEN_HEIGHT, 32, SDL_PIXELFORMAT_RGBA32);
+	renderer = offscreen == NULL ? NULL : SDL_CreateSoftwareRenderer(offscreen);
+	if (renderer == NULL) {
+		cerr << "Renderer could not be created: " << SDL_GetError() << endl;
+		return false;
+	}
+	return initRendererAndImages();
+}
+
+bool initRendererAndImages() {
 	// initialize renderer color
 	SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	
@@ -157,9 +201,16 @@ void close() {
 	
 	// destroy window
 	SDL_DestroyRenderer(renderer);
-	SDL_DestroyWindow(window);
+	if (window != NULL) {
+		SDL_DestroyWindow(window);
+	}
+	SDL_FreeSurface(offscreen);
 	window = NULL;
 	renderer = NULL;
+	offscreen = NULL;
+	
+	// close the 3D view, if it was open
+	view3d::close();
 	
 	// quit SDL subsystems
 	IMG_Quit();
@@ -187,6 +238,41 @@ SDL_Texture* loadTexture(string path) {
 	SDL_FreeSurface(loadedSurface);
 	
 	return newTexture;
+}
+
+// the mark a box's texture shows, for the 3D view
+view3d::Mark markOf(SDL_Texture* box) {
+	if (box == xTexture) {
+		return view3d::MARK_X;
+	}
+	if (box == oTexture) {
+		return view3d::MARK_O;
+	}
+	return view3d::EMPTY;
+}
+
+// draws the board in 3D, when it is shown in 3D, with the end screen for result
+void show3D(view3d::Result result) {
+	const view3d::Mark cells[9] = {
+		markOf(topLeftT), markOf(topMiddleT), markOf(topRightT),
+		markOf(middleLeftT), markOf(middleMiddleT), markOf(middleRightT),
+		markOf(bottomLeftT), markOf(bottomMiddleT), markOf(bottomRightT)
+	};
+	view3d::show(cells, result);
+}
+
+// the next event for the game: from the 2D window, then from the 3D view. While
+// the board is shown in 3D, the 3D view's keys, clicks and taps are the ones
+// that count (in a browser both see the keyboard), handed over as the events
+// the 2D window would have produced
+int pollEvent(SDL_Event* e) {
+	while (SDL_PollEvent(e) != 0) {
+		bool input = e->type == SDL_KEYDOWN || e->type == SDL_MOUSEBUTTONDOWN;
+		if (!(input && view3d::active())) {
+			return 1;
+		}
+	}
+	return view3d::pollEvent(e);
 }
 
 string checkForWinner() {
@@ -284,7 +370,7 @@ void resultScreen(SDL_Texture* result) {
 	while (running) {
 		
 		// handle events on queue
-		while (SDL_PollEvent(&e) != 0) {
+		while (pollEvent(&e) != 0) {
 			
 			// user requests quit, teardown is left to main
 			if (e.type == SDL_QUIT) {
@@ -311,6 +397,9 @@ void resultScreen(SDL_Texture* result) {
 		
 		// update screen
 		SDL_RenderPresent(renderer);
+		
+		// and the 3D view: the board, dimmed, under the same words
+		show3D(result == playerWin ? view3d::RESULT_PLAYER : result == computerWin ? view3d::RESULT_COMPUTER : view3d::RESULT_TIE);
 
 		SDL_Delay(FRAME_DELAY_MS);
 	}
@@ -422,6 +511,9 @@ void renderBoxes() {
 	
 	// update screen
 	SDL_RenderPresent(renderer);
+	
+	// and the 3D view
+	show3D(view3d::RESULT_NONE);
 
 	string result = checkForWinner();
 
@@ -544,6 +636,19 @@ int main(int argc, char* args[]) {
 
 	// seed the computer's move selection once, not on every retry
 	srand(time(NULL));
+	
+	// --2d keeps to the 2D window
+	for (int i = 1; i < argc; i++) {
+		if (strcmp(args[i], "--2d") == 0) {
+			want3D = false;
+		}
+	}
+	
+	// the 3D view first, so the 2D window can start hidden behind it; where
+	// Strata can't run, say why and play in 2D (in a browser the page decides)
+	if (want3D && !view3d::open(SCREEN_WIDTH, SCREEN_HEIGHT, "Tic Tac Toe") && !view3d::reason().empty()) {
+		cerr << "Playing in 2D: " << view3d::reason() << endl;
+	}
 
 	// start up SDL and create window, then load media; either failing leaves
 	// nothing to play, so exit rather than enter the game loop
@@ -562,7 +667,7 @@ int main(int argc, char* args[]) {
 	while (running) {
 		
 		// handle events on queue
-		while (SDL_PollEvent(&e) != 0) {
+		while (pollEvent(&e) != 0) {
 			
 			// user requests quit
 			if (e.type == SDL_QUIT) {

@@ -10,6 +10,11 @@ Draw an X in a box with the keys
 or by clicking the box. The computer answers with an O. Three in a row wins.
 README.md has the full rules.
 
+The board is shown in 3D, drawn by Strata (the strata.dll or libstrata.so.0.9
+in this folder, with its licence in STRATA-LICENSE.txt). Where Strata can't
+run (no graphics driver that can), the game says so and shows the flat 2D
+board instead; start it with --2d to always play on the flat board.
+
 Starting the game
 -----------------
 
@@ -17,8 +22,8 @@ Keep the PNG files next to the game and start it from this folder: they are
 loaded by relative path.
 
   Windows x64: unzip the whole folder first, then double-click tictactoe.exe.
-  All the DLLs it needs, SDL2 and SDL2_image among them, are in this
-  folder; keep them next to tictactoe.exe. If the game
+  All the DLLs it needs, SDL2, SDL2_image and strata.dll among them, are
+  in this folder; keep them next to tictactoe.exe. If the game
   closes at once with no message, it could not load its PNG files: check
   that it is being started from this unzipped folder.
 
