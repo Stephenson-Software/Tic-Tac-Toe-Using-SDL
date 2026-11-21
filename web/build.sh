@@ -40,7 +40,7 @@ relay="$strata_web/kit/grid-relay/dist"
 for f in grid-relay-scene.js grid-relay-scene.wasm grid-relay.js strata-kit.js strata-loader.js; do
   cp "$relay/$f" "$out/"
 done
-cp web/view3d.js "$out/"
+cp web/view3d.js web/favicon.ico "$out/"
 
 echo "Built $out:"
 ls -l "$out"
