@@ -3,7 +3,7 @@
 // 600 x 600 window and a phone held upright (390 x 844).
 //
 //   g++ -std=c++17 -I/usr/include/SDL2 test/view3dShots.cpp -o view3dShots -lSDL2 -ldl
-//   STRATA_LIBRARY=<path to libstrata.so.0.9> ./view3dShots <output directory>
+//   STRATA_LIBRARY=<path to libstrata.so.0.10> ./view3dShots <output directory>
 //
 // Needs no display: Strata renders offscreen (EGL). Exits 1 when Strata can't
 // run here or a picture can't be saved.

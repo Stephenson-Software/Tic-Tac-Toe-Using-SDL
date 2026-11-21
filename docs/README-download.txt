@@ -10,7 +10,7 @@ Draw an X in a box with the keys
 or by clicking the box. The computer answers with an O. Three in a row wins.
 README.md has the full rules.
 
-The board is shown in 3D, drawn by Strata (the strata.dll or libstrata.so.0.9
+The board is shown in 3D, drawn by Strata (the strata.dll or libstrata.so.0.10
 in this folder, with its licence in STRATA-LICENSE.txt). Where Strata can't
 run (no graphics driver that can), the game says so and shows the flat 2D
 board instead; start it with --2d to always play on the flat board.

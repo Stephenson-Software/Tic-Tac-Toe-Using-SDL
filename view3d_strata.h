@@ -12,7 +12,7 @@
 //                           a click at the middle of that box in the 2D
 //                           window, so keyForClick decides what it means
 //
-// On the desktop, libstrata (libstrata.so.0.9 on Linux, strata.dll on Windows)
+// On the desktop, libstrata (libstrata.so.0.10 on Linux, strata.dll on Windows)
 // is loaded at run time from beside the executable, from STRATA_LIBRARY, or
 // from the library path. Without it, or without a GPU that can run it, the
 // game opens its 2D window as before. Strata draws in its own window (SDL3
@@ -167,8 +167,8 @@ inline bool loadStrata(StrataApi& api, std::string& reason) {
 	}
 	auto find = [&](const char* name) { return reinterpret_cast<void*>(GetProcAddress(lib, name)); };
 #else
-	candidates.push_back(executableDirectory() + "libstrata.so.0.9");
-	candidates.push_back("libstrata.so.0.9");
+	candidates.push_back(executableDirectory() + "libstrata.so.0.10");
+	candidates.push_back("libstrata.so.0.10");
 	candidates.push_back("libstrata.so");
 	void* lib = nullptr;
 	for (const std::string& c : candidates) {

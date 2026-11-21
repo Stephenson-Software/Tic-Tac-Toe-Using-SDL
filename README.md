@@ -65,7 +65,7 @@ found by casting a ray onto the tiles, and handed to the game as a click on
 that box), the same computer, the same rules, and the same end screen, with
 the result written over the dimmed board.
 
-- **Desktop.** The game loads Strata's library (`libstrata.so.0.9` on Linux,
+- **Desktop.** The game loads Strata's library (`libstrata.so.0.10` on Linux,
   `strata.dll` on Windows) from beside the executable, from the path in
   `STRATA_LIBRARY`, or from the system's library path, and opens its window.
   Where the library is missing or can't run (no graphics driver that can), it
@@ -106,7 +106,7 @@ Tests:
   (Strata's `docs/DRIVE.md`), drawn headless, with keys and clicks on tiles,
   and saves the board after each move:
 
-      cp "$(tools/fetch-strata.sh linux /tmp/strata)/lib/libstrata.so.0.9" .
+      cp "$(tools/fetch-strata.sh linux /tmp/strata)/lib/libstrata.so.0.10" .
       python3 test/play3d.py . /tmp/play3d
 
 - `test/web3d.cjs` plays the browser build in headless Chromium: it starts in
@@ -184,7 +184,7 @@ Without pkg-config, the same thing spelled out:
 run time (on Windows, leave -ldl out). Strata is not needed to build: put its
 library beside the game to play in 3D (see "The board in 3D" above):
 
-    cp "$(tools/fetch-strata.sh linux /tmp/strata)/lib/libstrata.so.0.9" .
+    cp "$(tools/fetch-strata.sh linux /tmp/strata)/lib/libstrata.so.0.10" .
 
 ## Running
 

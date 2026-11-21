@@ -4,7 +4,7 @@
 # checks it against the release's SHA256SUMS, unpacks it under <dest> and
 # prints the directory it unpacked to:
 #
-#   tools/fetch-strata.sh linux <dest>     libstrata.so.0.9 under lib/
+#   tools/fetch-strata.sh linux <dest>     libstrata.so.0.10 under lib/
 #   tools/fetch-strata.sh windows <dest>   strata.dll under bin/
 #   tools/fetch-strata.sh web <dest>       the grid relay under kit/grid-relay/
 #
