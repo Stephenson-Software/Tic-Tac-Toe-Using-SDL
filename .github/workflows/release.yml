@@ -5,9 +5,10 @@
 #     publishing a release on one builds both and uploads them to that
 #     release. A pushed tag with no release yet gets a pre-release created for
 #     it.
-#   - A pull request that changes this workflow, tictactoe.cpp, one of the two
-#     headers it pulls in (usageReporting.h, which includes trace_client.hpp)
-#     or version.txt
+#   - A pull request that changes this workflow, tictactoe.cpp, one of the
+#     headers it pulls in (usageReporting.h, which includes trace_client.hpp,
+#     and the 3D view's view3d.h, view3d_strata.h and third_party/strata), the
+#     Strata fetch script or version.txt
 #     runs the same builds as a dry run, so a packaging change is checked
 #     before it merges. The headers are listed because their _WIN32 code is
 #     compiled only by the Windows build here.
@@ -16,8 +17,11 @@
 #     builds to its existing release instead.
 #
 # Each download is the game, the six PNG files it loads from its own
-# directory, the licence, README.md and docs/README-download.txt; the Windows
-# one also carries every DLL the game loads from MSYS2. See docs/RELEASING.md.
+# directory, Strata's library for the 3D view (libstrata.so.0.9 or strata.dll,
+# from the Strata release named in third_party/strata/VERSION, with its licence
+# and notices), the licence, README.md and docs/README-download.txt; the
+# Windows one also carries every DLL the game loads from MSYS2. See
+# docs/RELEASING.md.
 name: Release
 
 on:
@@ -31,6 +35,10 @@ on:
       - "tictactoe.cpp"
       - "usageReporting.h"
       - "trace_client.hpp"
+      - "view3d.h"
+      - "view3d_strata.h"
+      - "third_party/strata/**"
+      - "tools/fetch-strata.sh"
       - "version.txt"
   workflow_dispatch:
     inputs:
@@ -131,7 +139,10 @@ jobs:
       - name: Build
         run: |
           g++ -std=c++17 -O2 -Wall -pthread -DTIC_TAC_TOE_VERSION="\"$VERSION\"" tictactoe.cpp -o tictactoe \
-            $(pkg-config --cflags --libs sdl2 SDL2_image)
+            $(pkg-config --cflags --libs sdl2 SDL2_image) -ldl
+
+      - name: Fetch Strata for the 3D view
+        run: echo "STRATA_DIR=$(tools/fetch-strata.sh linux "$RUNNER_TEMP/strata")" >> "$GITHUB_ENV"
 
       - name: Assemble the package
         run: |
@@ -140,6 +151,9 @@ jobs:
           cp tictactoe "$dir/tictactoe"
           strip "$dir/tictactoe"
           cp viewport.png x.png o.png playerWin.png computerWin.png tie.png "$dir/"
+          cp "$STRATA_DIR/lib/libstrata.so.0.9" "$dir/"
+          cp "$STRATA_DIR/LICENSE" "$dir/STRATA-LICENSE.txt"
+          cp "$STRATA_DIR/THIRD_PARTY_NOTICES.md" "$dir/STRATA-THIRD_PARTY_NOTICES.md"
           cp LICENSE "$dir/LICENSE.txt"
           cp README.md "$dir/README.md"
           cp docs/README-download.txt "$dir/README-download.txt"
@@ -201,6 +215,8 @@ jobs:
             mingw-w64-x86_64-SDL2
             mingw-w64-x86_64-SDL2_image
             zip
+            unzip
+            curl
 
       # -mwindows: no console window behind the game. The C++ runtime is linked
       # in; SDL2, SDL2_image and what they load ship beside the executable.
@@ -208,6 +224,9 @@ jobs:
         run: |
           g++ -std=c++17 -O2 -Wall -pthread -DTIC_TAC_TOE_VERSION="\"$VERSION\"" tictactoe.cpp -o tictactoe.exe \
             $(pkg-config --cflags --libs sdl2 SDL2_image) -static-libgcc -static-libstdc++ -mwindows
+
+      - name: Fetch Strata for the 3D view
+        run: echo "STRATA_DIR=$(tools/fetch-strata.sh windows "$(cygpath -u "$RUNNER_TEMP")/strata")" >> "$GITHUB_ENV"
 
       - name: Assemble the package
         run: |
@@ -225,6 +244,9 @@ jobs:
           fi
           ldd $binaries | awk '$3 ~ /\/mingw64\/bin\//{print $3}' | sort -u | while read -r dll; do cp "$dll" "$dir/"; done
           cp viewport.png x.png o.png playerWin.png computerWin.png tie.png "$dir/"
+          cp "$STRATA_DIR/bin/strata.dll" "$dir/"
+          cp "$STRATA_DIR/LICENSE" "$dir/STRATA-LICENSE.txt"
+          cp "$STRATA_DIR/THIRD_PARTY_NOTICES.md" "$dir/STRATA-THIRD_PARTY_NOTICES.md"
           cp LICENSE "$dir/LICENSE.txt"
           cp README.md "$dir/README.md"
           cp docs/README-download.txt "$dir/README-download.txt"

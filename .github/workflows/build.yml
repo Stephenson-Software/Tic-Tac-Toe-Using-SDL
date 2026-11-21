@@ -1,5 +1,6 @@
-# The game has no test suite beyond the usage-reporting check; this proves it still builds with the command
-# README.md documents, with -Wall added.
+# Proves the game still builds with the command README.md documents (with -Wall added), checks the
+# usage-reporting switch and the 3D view's scene, picking and wire messages, and plays one game in
+# 3D through Strata's drive channel, drawn headless.
 name: Build
 
 on:
@@ -10,18 +11,19 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    # Nothing here runs the game, but if a step ever does, it must not count
-    # as a use of it (see "Usage reporting" in README.md).
+    # The 3D game below is played by a script, which must not count as a use
+    # of it (see "Usage reporting" in README.md).
     env:
       TRACE_USAGE_REPORTING: "off"
+      DO_NOT_TRACK: "1"
     steps:
       - uses: actions/checkout@v5
-      - name: Install SDL2 dependencies
+      - name: Install SDL2 dependencies, and Mesa for drawing the 3D view headless
         run: |
           sudo apt-get update
-          sudo apt-get install -y libsdl2-dev libsdl2-image-dev
+          sudo apt-get install -y libsdl2-dev libsdl2-image-dev libegl1 libgl1-mesa-dri
       - name: Build (as documented)
-        run: g++ -std=c++17 -Wall -pthread tictactoe.cpp -o tictactoe $(pkg-config --cflags --libs sdl2 SDL2_image)
+        run: g++ -std=c++17 -Wall -pthread tictactoe.cpp -o tictactoe $(pkg-config --cflags --libs sdl2 SDL2_image) -ldl
       - name: Check the executable exists
         run: test -x tictactoe
       - name: Check the usage-reporting switch
@@ -30,3 +32,26 @@ jobs:
         run: |
           g++ -std=c++17 -Wall -Wextra -Werror -pthread test/usageReportingTest.cpp -o usageReportingTest
           ./usageReportingTest
+      - name: Fetch Strata (the 3D view's library and the browser's grid relay)
+        run: |
+          echo "STRATA_LINUX=$(tools/fetch-strata.sh linux "$RUNNER_TEMP/strata")" >> "$GITHUB_ENV"
+          echo "STRATA_WEB=$(tools/fetch-strata.sh web "$RUNNER_TEMP/strata")" >> "$GITHUB_ENV"
+      - name: Check the 3D view (view3d.h), against the grid relay's own reader
+        # Picking every box at three window shapes, the board and marks, the
+        # end screens, and that the browser's relay draws exactly what the
+        # desktop draws for the same board.
+        run: |
+          g++ -std=c++17 -Wall -Wextra -Werror -DVIEW3D_RELAY_H="\"$STRATA_WEB/kit/grid-relay/relay.h\"" -Ithird_party \
+            test/view3dTest.cpp -o view3dTest
+          ./view3dTest
+      - name: Play a game in 3D (headless, through Strata's drive channel)
+        run: |
+          cp "$STRATA_LINUX"/lib/libstrata.so.0.9 .
+          python3 test/play3d.py . "$RUNNER_TEMP/play3d"
+      - name: Keep the 3D game's screenshots
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: play3d
+          path: ${{ runner.temp }}/play3d
+          if-no-files-found: ignore

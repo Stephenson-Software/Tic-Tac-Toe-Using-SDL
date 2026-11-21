@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Regenerates docs/images/gameplay.gif by playing one real game of the native build.
+# Regenerates docs/images/gameplay.gif by playing one real game of the native build, on its
+# 2D board (--2d; the 3D view's pictures come from test/view3dShots.cpp and test/play3d.py).
 # Requires: Xvfb, xdotool, ImageMagick (import/convert), plus the SDL2 build deps.
 # Usage (from the repository root): bash docs/capture.sh [display-number]
 # The computer's moves are random, so each run records a different game.
@@ -9,7 +10,7 @@ OUT="$PWD/docs/images"
 TMP="$(mktemp -d)"
 mkdir -p "$OUT"
 
-g++ -std=c++17 -pthread tictactoe.cpp -o tictactoe $(pkg-config --cflags --libs sdl2 SDL2_image)
+g++ -std=c++17 -pthread tictactoe.cpp -o tictactoe $(pkg-config --cflags --libs sdl2 SDL2_image) -ldl
 
 # no usage report from a capture run
 export TRACE_USAGE_REPORTING=off DO_NOT_TRACK=1
@@ -22,7 +23,7 @@ trap 'kill $XPID 2>/dev/null; rm -rf "$TMP"' EXIT
 export DISPLAY=":$N"
 for _ in $(seq 50); do xdotool getdisplaygeometry >/dev/null 2>&1 && break; sleep 0.2; done
 
-./tictactoe &
+./tictactoe --2d &
 PID=$!
 sleep 1.5
 WIN=$(xdotool search --pid "$PID" | tail -1)

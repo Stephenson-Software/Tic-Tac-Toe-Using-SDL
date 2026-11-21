@@ -10,3 +10,7 @@ a.out
 # browser build output (web/build.sh) and its deploy version (CI)
 web/build/
 web/arcade-version.txt
+
+# Strata, beside the game for its 3D view (fetched, never committed)
+libstrata.so*
+strata.dll

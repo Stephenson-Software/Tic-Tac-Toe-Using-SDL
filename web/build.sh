@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Builds the browser version into web/build/ (index.html, index.js, index.wasm,
-# index.data). Needs Emscripten's em++ on PATH (source emsdk_env.sh first).
+# index.data, and the 3D board: Strata's grid relay and web/view3d.js). Needs
+# Emscripten's em++ on PATH (source emsdk_env.sh first), and curl to fetch
+# Strata's release (or STRATA_WEB, below).
 # The native build is unaffected.
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -26,6 +28,19 @@ em++ -O2 -std=c++17 -Wall \
   $images \
   --shell-file web/shell.html \
   -o "$out/index.html"
+
+# The 3D board: Strata's prebuilt grid relay (its .wasm, glue and page
+# scripts) beside the game, and the page's side of it. STRATA_WEB=<dir> uses an
+# unpacked strata-<version>-wasm32-emscripten download instead of fetching one.
+strata_web=${STRATA_WEB:-}
+if [ -z "$strata_web" ]; then
+  strata_web=$(tools/fetch-strata.sh web "${TMPDIR:-/tmp}/tic-tac-toe-strata")
+fi
+relay="$strata_web/kit/grid-relay/dist"
+for f in grid-relay-scene.js grid-relay-scene.wasm grid-relay.js strata-kit.js strata-loader.js; do
+  cp "$relay/$f" "$out/"
+done
+cp web/view3d.js web/favicon.ico "$out/"
 
 echo "Built $out:"
 ls -l "$out"

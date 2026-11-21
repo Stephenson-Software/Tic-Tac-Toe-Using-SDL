@@ -1,5 +1,7 @@
-# Builds the browser (Emscripten) version with web/build.sh and, when enabled,
-# deploys it to arcade as https://tic-tac-toe-sdl.play.danielstephenson.dev
+# Builds the browser (Emscripten) version with web/build.sh (which fetches
+# Strata's grid relay for the 3D board), plays it in headless Chromium in 3D
+# and 2D, and, when enabled, deploys it to arcade as
+# https://tic-tac-toe-sdl.play.danielstephenson.dev
 name: Browser build
 
 on:
@@ -24,6 +26,27 @@ jobs:
           test -s web/build/index.js
           test -s web/build/index.wasm
           test -s web/build/index.data
+          # the 3D board: Strata's grid relay and the page's side of it
+          for f in grid-relay-scene.js grid-relay-scene.wasm grid-relay.js strata-kit.js strata-loader.js view3d.js; do
+            test -s "web/build/$f"
+          done
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+      - name: Play it in headless Chromium, in 3D and 2D (test/web3d.cjs)
+        run: |
+          mkdir -p "$RUNNER_TEMP/web3d" && cd "$RUNNER_TEMP/web3d"
+          npm install --no-save --no-package-lock playwright@1.65.1
+          npx playwright install --with-deps chromium
+          NODE_PATH="$RUNNER_TEMP/web3d/node_modules" node "$GITHUB_WORKSPACE/test/web3d.cjs" \
+            "$GITHUB_WORKSPACE/web/build" "$RUNNER_TEMP/web3d/shots"
+      - name: Keep the browser screenshots
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: web3d
+          path: ${{ runner.temp }}/web3d/shots
+          if-no-files-found: ignore
       - name: Write the deploy version
         run: echo "$(tr -d '[:space:]' < version.txt)+g${GITHUB_SHA::7}" > web/arcade-version.txt && cat web/arcade-version.txt
       - name: Deploy to arcade
